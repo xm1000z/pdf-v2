@@ -1,8 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getDocument, PDFDocumentProxy } from "pdfjs-dist";
-import Dropzone from "react-dropzone";
 import {
   Select,
   SelectContent,
@@ -10,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FormEvent, useState } from "react";
+import Spinner from "@/components/ui/spinner";
 import {
   Chunk,
   chunkPdf,
@@ -18,13 +16,26 @@ import {
   generateQuickSummary,
   summarizeStream,
 } from "@/lib/summarize";
+import { getDocument, PDFDocumentProxy } from "pdfjs-dist";
+import { FormEvent, useState } from "react";
+import Dropzone from "react-dropzone";
+
+// test early on vercel
+import "pdfjs-dist/build/pdf.worker.mjs";
+import Image from "next/image";
+import SparklesIcon from "@/components/icons/sparkles";
 
 export default function Home() {
-  const [status, setStatus] = useState<"idle" | "generating">("generating");
+  const [status, setStatus] = useState<"idle" | "parsing" | "generating">(
+    "idle",
+  );
   const [file, setFile] = useState<File>();
-  const [fileUrl, setFileUrl] = useState<string>();
+  // const [fileUrl, setFileUrl] = useState<string>();
   const [pdf, setPdf] = useState<PDFDocumentProxy>();
   const [chunks, setChunks] = useState<Chunk[]>([]);
+  const [activeChunkIndex, setActiveChunkIndex] = useState<
+    number | "quick-summary" | null
+  >(null);
   const [controller, setController] = useState<AbortController>();
   const [quickSummary, setQuickSummary] = useState<string>();
   const [image, setImage] = useState<string>();
@@ -34,9 +45,9 @@ export default function Home() {
 
     if (!file) return;
 
-    setStatus("generating");
     // const fileUrl = URL.createObjectURL(file);
     // setFileUrl(fileUrl);
+    setStatus("parsing");
 
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await getDocument({ data: arrayBuffer }).promise;
@@ -44,6 +55,8 @@ export default function Home() {
 
     const chunks = await chunkPdf(pdf);
     setChunks(chunks);
+
+    setStatus("generating");
 
     const summarizedChunks: Chunk[] = [];
 
@@ -58,7 +71,7 @@ export default function Home() {
       },
 
       close() {
-        console.log("write stream closed");
+        // console.log("write stream closed");
       },
     });
 
@@ -69,15 +82,19 @@ export default function Home() {
     await stream.pipeTo(writeStream, { signal: controller.signal });
 
     const quickSummary = await generateQuickSummary(summarizedChunks);
-    setQuickSummary(quickSummary);
-
     const image = await generateImage(quickSummary);
+
+    setQuickSummary(quickSummary);
     setImage(`data:image/png;base64,${image}`);
+
+    setActiveChunkIndex((activeChunkIndex) =>
+      activeChunkIndex === null ? "quick-summary" : activeChunkIndex,
+    );
   }
 
   return (
     <div>
-      {status === "idle" ? (
+      {status === "idle" || status === "parsing" ? (
         <div className="mx-auto max-w-lg">
           <h1>Summarize PDFs in seconds</h1>
           <p>Upload a PDF to get a quick, clear summary—your way.</p>
@@ -101,7 +118,7 @@ export default function Home() {
                     className={`mt-2 flex aspect-video cursor-pointer items-center justify-center rounded-lg border border-dashed bg-gray-100 ${isDragAccept ? "border-blue-500" : "border-gray-900/25"}`}
                     {...getRootProps()}
                   >
-                    <input required {...getInputProps()} />
+                    <input {...getInputProps()} />
                     <div className="text-center">
                       {acceptedFiles.length > 0 ? (
                         <p>{acceptedFiles[0].name}</p>
@@ -125,7 +142,13 @@ export default function Home() {
               </Select>
             </div>
             <div className="mt-4 text-center">
-              <Button type="submit" variant="secondary" className="bg-white">
+              <Button
+                type="submit"
+                variant="secondary"
+                className="border bg-white text-base font-semibold"
+                disabled={status === "parsing"}
+              >
+                <SparklesIcon />
                 Generate
               </Button>
             </div>
@@ -134,7 +157,7 @@ export default function Home() {
       ) : (
         <div className="mx-auto max-w-3xl">
           <div className="border-gray-250 flex items-center justify-between rounded-xl border px-6 py-3">
-            <p className="text-lg">Morocco History.pdf</p>
+            <p className="text-lg">{file?.name}</p>
 
             <div>
               <Button>Share</Button>
@@ -142,44 +165,52 @@ export default function Home() {
           </div>
 
           <div className="mt-4 flex gap-4">
-            <div className="rounded-xl bg-white p-4 shadow">
-              <p>The Rich culture of Morocco</p>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vitae
-                nam eum facilis cupiditate assumenda corporis ipsa tenetur culpa
-                earum mollitia itaque repellat minima ipsam recusandae labore
-                modi, quos iure adipisci?
-              </p>
+            <div className="w-full grow rounded-xl bg-white p-5 text-gray-500 shadow">
+              {activeChunkIndex === "quick-summary" ? (
+                <div>
+                  {image && (
+                    <Image
+                      className="rounded-md"
+                      src={image}
+                      width={1280}
+                      height={720}
+                      alt=""
+                    />
+                  )}
+                  <hr className="-mx-4 my-8" />
+                  <div>{quickSummary}</div>
+                </div>
+              ) : activeChunkIndex !== null ? (
+                <div>{chunks[activeChunkIndex].summary}</div>
+              ) : null}
             </div>
 
-            <div className="flex w-full max-w-72 shrink-0 flex-col gap-4">
+            <div className="flex w-full max-w-60 shrink-0 flex-col gap-4">
               <Button
                 variant="outline"
-                className="border-gray-250 justify-start px-4 py-6 text-base shadow-sm"
+                className={`${activeChunkIndex === "quick-summary" ? "bg-white hover:bg-white" : ""} border-gray-250 inline-flex w-full justify-between px-4 py-6 text-base shadow-sm`}
+                onClick={() => setActiveChunkIndex("quick-summary")}
+                disabled={!quickSummary}
               >
                 Quick summary
+                <Spinner loading={!quickSummary} />
               </Button>
+
               <hr />
 
               <div className="flex flex-col gap-2">
-                <Button
-                  variant="outline"
-                  className="border-gray-250 justify-start px-4 py-6 text-base shadow-sm"
-                >
-                  Section 1
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-gray-250 justify-start px-4 py-6 text-base shadow-sm"
-                >
-                  Section 2
-                </Button>
-                <Button
-                  variant="outline"
-                  className="border-gray-250 justify-start px-4 py-6 text-base shadow-sm"
-                >
-                  Section 3
-                </Button>
+                {chunks.map((chunk, i) => (
+                  <Button
+                    key={i}
+                    variant="outline"
+                    className={`${activeChunkIndex === i ? "bg-white hover:bg-white" : ""} border-gray-250 inline-flex w-full justify-between px-4 py-6 text-base shadow-sm disabled:cursor-not-allowed`}
+                    disabled={!chunk.summary}
+                    onClick={() => setActiveChunkIndex(i)}
+                  >
+                    <span>Section {i + 1}</span>
+                    <Spinner loading={!chunk.summary} />
+                  </Button>
+                ))}
               </div>
             </div>
           </div>
