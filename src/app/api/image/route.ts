@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   const response = await client.images.create({
     model: "black-forest-labs/FLUX.1-schnell",
     prompt,
-    steps: 3,
+    steps: 5,
     width: 1280,
     height: 720,
     // @ts-expect-error - this is not typed in the API
