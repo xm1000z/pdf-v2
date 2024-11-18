@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Link from "next/link";
+import Logo from "@/components/ui/logo";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,13 +26,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} flex min-h-full flex-col bg-gray-100 antialiased`}
       >
-        <main className="mx-auto max-w-7xl px-4 pb-24 pt-8 lg:px-6">
-          {children}
-        </main>
+        <header className="py-6 text-center">
+          <Link href="/" className="flex justify-center">
+            <Logo />
+          </Link>
+        </header>
+        <main className="grow">{children}</main>
+        <footer className="mx-auto flex w-full max-w-7xl justify-between px-4 py-4">
+          <p>Powered by Together.ai & Flux</p>
+
+          <div>
+            <Link href="#">GitHub</Link>
+            <Link href="#">Twitter</Link>
+          </div>
+        </footer>
       </body>
     </html>
   );
