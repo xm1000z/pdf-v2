@@ -16,7 +16,8 @@ import {
   generateQuickSummary,
   summarizeStream,
 } from "@/lib/summarize";
-import { getDocument, PDFDocumentProxy } from "pdfjs-dist";
+import { getDocument } from "pdfjs-dist";
+// import { getDocument, PDFDocumentProxy } from "pdfjs-dist";
 import { FormEvent, useState } from "react";
 import Dropzone from "react-dropzone";
 
@@ -31,12 +32,12 @@ export default function Home() {
   );
   const [file, setFile] = useState<File>();
   // const [fileUrl, setFileUrl] = useState<string>();
-  const [pdf, setPdf] = useState<PDFDocumentProxy>();
+  // const [pdf, setPdf] = useState<PDFDocumentProxy>();
   const [chunks, setChunks] = useState<Chunk[]>([]);
   const [activeChunkIndex, setActiveChunkIndex] = useState<
     number | "quick-summary" | null
   >(null);
-  const [controller, setController] = useState<AbortController>();
+  // const [controller, setController] = useState<AbortController>();
   const [quickSummary, setQuickSummary] = useState<string>();
   const [image, setImage] = useState<string>();
 
@@ -51,7 +52,7 @@ export default function Home() {
 
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await getDocument({ data: arrayBuffer }).promise;
-    setPdf(pdf);
+    // setPdf(pdf);
 
     const chunks = await chunkPdf(pdf);
     setChunks(chunks);
@@ -77,7 +78,7 @@ export default function Home() {
 
     const stream = await summarizeStream(chunks);
     const controller = new AbortController();
-    setController(controller);
+    // setController(controller);
 
     await stream.pipeTo(writeStream, { signal: controller.signal });
 
