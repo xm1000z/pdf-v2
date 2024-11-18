@@ -5,6 +5,7 @@ import { ChangeEvent, useState } from "react";
 
 // test early on vercel
 import "pdfjs-dist/build/pdf.worker.mjs";
+import Image from "next/image";
 
 type Chunk = {
   text: string;
@@ -17,6 +18,8 @@ export default function Home() {
   const [pdf, setPdf] = useState<PDFDocumentProxy>();
   const [chunks, setChunks] = useState<Chunk[]>([]);
   const [controller, setController] = useState<AbortController>();
+  const [quickSummary, setQuickSummary] = useState<string>();
+  const [image, setImage] = useState<string>();
 
   const [isShowingChunks, setIsShowingChunks] = useState(true);
 
@@ -37,11 +40,14 @@ export default function Home() {
       const chunks = await chunkPdf(pdf);
       setChunks(chunks);
 
+      const summarizedChunks: Chunk[] = [];
+
       const writeStream = new WritableStream({
         write(chunk) {
+          summarizedChunks.push(chunk);
           setChunks((chunks) => {
             return chunks.map((c) => {
-              return c.text === chunk.text ? chunk : c;
+              return c.text === chunk.text ? { ...c, ...chunk } : c;
             });
           });
         },
@@ -53,20 +59,24 @@ export default function Home() {
 
       const stream = await summarizeStream(chunks);
       const controller = new AbortController();
-      stream.pipeTo(writeStream, { signal: controller.signal });
-
       setController(controller);
+
+      await stream.pipeTo(writeStream, { signal: controller.signal });
+
+      const quickSummary = await generateQuickSummary(summarizedChunks);
+      setQuickSummary(quickSummary);
+
+      const image = await generateImage(quickSummary);
+      setImage(`data:image/png;base64,${image}`);
+
+      // generate image
     } else {
       console.log("no file selected");
       setFile(undefined);
     }
   }
 
-  async function chunkPdf(pdf: PDFDocumentProxy) {
-    // const chunkCharSize = 6000; // 100k
-    const chunkCharSize = 100_000;
-    // ideally have at least 4 chunks
-    // chunk size = total chars / 4 OR 100k, whichever is smaller
+  async function getPdfText(pdf: PDFDocumentProxy) {
     const numPages = pdf.numPages;
     let fullText = "";
 
@@ -84,9 +94,32 @@ export default function Home() {
       fullText += pageText + "\n"; // Add page text to full text
     }
 
+    return fullText;
+  }
+
+  async function chunkPdf(pdf: PDFDocumentProxy) {
+    // const chunkCharSize = 6000; // 100k
+    // const chunkCharSize = 100_000;
+    const maxChunkSize = 100_000;
+    // ideally have at least 4 chunks
+    // chunk size = total chars / 4 OR 100k, whichever is smaller
+
+    const fullText = await getPdfText(pdf);
+
     const chunks: Chunk[] = [];
+    const chunkCharSize = Math.min(
+      maxChunkSize,
+      Math.ceil(fullText.length / 4),
+    );
+
+    console.log({
+      chunkCharSize,
+      fullTextLength: fullText.length,
+      answer: fullText.length / chunkCharSize,
+    });
 
     for (let i = 0; i < fullText.length; i += chunkCharSize) {
+      console.log("iteration", i, "start", i, "end", i + chunkCharSize);
       const text = fullText.slice(i, i + chunkCharSize);
       chunks.push({ text });
     }
@@ -95,10 +128,10 @@ export default function Home() {
   }
 
   async function summarizeStream(chunks: Chunk[]) {
+    let reading = true;
     const stream = new ReadableStream({
       async start(controller) {
-        for (let i = 0; i < chunks.length; i++) {
-          const chunk = chunks[i];
+        const promises = chunks.map(async (chunk) => {
           const text = chunk.text;
           const response = await fetch("/api/summarize", {
             method: "POST",
@@ -109,19 +142,57 @@ export default function Home() {
           });
           const data = await response.json();
 
-          controller.enqueue({
-            ...chunk,
-            summary: data.summary,
-          });
-        }
+          if (reading) {
+            controller.enqueue({
+              ...chunk,
+              summary: data.summary,
+            });
+          }
+        });
+
+        await Promise.all(promises);
+        controller.close();
       },
 
       cancel() {
         console.log("read stream canceled");
+        reading = false;
       },
     });
 
     return stream;
+  }
+
+  async function generateQuickSummary(chunks: Chunk[]) {
+    const allSummaries = chunks.map((chunk) => chunk.summary).join("\n\n");
+
+    const response = await fetch("/api/summarize", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: allSummaries }),
+    });
+
+    const data = await response.json();
+    const summary = data.summary;
+
+    return typeof summary === "string" ? summary : "No summary available";
+  }
+
+  async function generateImage(summary: string) {
+    const response = await fetch("/api/image", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: summary }),
+    });
+
+    const data = await response.json();
+    const image = data.image;
+
+    return typeof image === "string" ? image : null;
   }
 
   return (
@@ -149,6 +220,12 @@ export default function Home() {
               </li>
             )}
             {pdf && <li>Pages: {pdf?.numPages}</li>}
+            {chunks.length > 0 && (
+              <li>
+                Characters:{" "}
+                {chunks.reduce((memo, item) => memo + item.text.length, 0)}
+              </li>
+            )}
           </ul>
         </div>
       </div>
@@ -199,7 +276,7 @@ export default function Home() {
             {chunks.map((chunk, index) => (
               <li key={index}>
                 <div className="bg-gray-300 px-2 py-1 text-xs font-medium">
-                  Chunk {index + 1}
+                  Summary {index + 1}
                 </div>
                 <div className="whitespace-pre-wrap border border-gray-300 p-4">
                   {chunk.summary ? (
@@ -213,6 +290,31 @@ export default function Home() {
               </li>
             ))}
           </ul>
+        </div>
+      </div>
+      <div>
+        <div className="flex items-center justify-between">
+          <h2>5. Quick summary</h2>
+        </div>
+        <div>
+          {quickSummary && (
+            <>
+              <div className="bg-gray-300 px-2 py-1 text-xs font-medium">
+                Quick summary
+              </div>
+              <div className="whitespace-pre-wrap border border-gray-300 p-4">
+                {quickSummary}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      <div>
+        <div className="flex items-center justify-between">
+          <h2>6. Image</h2>
+        </div>
+        <div>
+          {image && <Image src={image} width={1280} height={720} alt="" />}
         </div>
       </div>
     </div>
