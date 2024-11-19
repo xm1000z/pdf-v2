@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
     response_format: {
       type: "json_object",
-      // @ts-ignore
+      // @ts-expect-error sdk needs updating
       schema: zodToJsonSchema(
         z.object({
           title: z.string().describe("A title for the summary"),
