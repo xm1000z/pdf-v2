@@ -45,20 +45,17 @@ export default function Home() {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const language = new FormData(e.currentTarget).get("language");
 
-    if (!file) return;
+    if (!file || typeof language !== "string") return;
 
-    // const fileUrl = URL.createObjectURL(file);
-    // setFileUrl(fileUrl);
     setStatus("parsing");
 
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await getDocument({ data: arrayBuffer }).promise;
-    // setPdf(pdf);
-
     const chunks = await chunkPdf(pdf);
-    setChunks(chunks);
 
+    setChunks(chunks);
     setStatus("generating");
 
     const summarizedChunks: Chunk[] = [];
@@ -72,19 +69,13 @@ export default function Home() {
           );
         });
       },
-
-      close() {
-        // console.log("write stream closed");
-      },
     });
 
-    const stream = await summarizeStream(chunks);
+    const stream = await summarizeStream(chunks, language);
     const controller = new AbortController();
-    // setController(controller);
-
     await stream.pipeTo(writeStream, { signal: controller.signal });
 
-    const quickSummary = await generateQuickSummary(summarizedChunks);
+    const quickSummary = await generateQuickSummary(summarizedChunks, language);
     const image = await generateImage(quickSummary.summary);
 
     setQuickSummary(quickSummary);
@@ -94,8 +85,6 @@ export default function Home() {
       activeChunkIndex === null ? "quick-summary" : activeChunkIndex,
     );
   }
-
-  console.log(chunks);
 
   return (
     <div>
@@ -152,12 +141,25 @@ export default function Home() {
                 <label className="mt-8 text-gray-500" htmlFor="language">
                   Language
                 </label>
-                <Select defaultValue="english">
+                <Select defaultValue="english" name="language">
                   <SelectTrigger className="mt-2 bg-gray-100" id="language">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="english">English</SelectItem>
+                    {[
+                      { label: "English", value: "english" },
+                      { label: "German", value: "german" },
+                      { label: "French", value: "french" },
+                      { label: "Italian", value: "italian" },
+                      { label: "Portuguese", value: "portuguese" },
+                      { label: "Hindi", value: "hindi" },
+                      { label: "Spanish", value: "spanish" },
+                      { label: "Thai", value: "thai" },
+                    ].map((language) => (
+                      <SelectItem key={language.value} value={language.value}>
+                        {language.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

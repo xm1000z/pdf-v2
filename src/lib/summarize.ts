@@ -48,7 +48,7 @@ export async function chunkPdf(pdf: PDFDocumentProxy) {
   return chunks;
 }
 
-export async function summarizeStream(chunks: Chunk[]) {
+export async function summarizeStream(chunks: Chunk[], language: string) {
   let reading = true;
   const stream = new ReadableStream({
     async start(controller) {
@@ -59,7 +59,7 @@ export async function summarizeStream(chunks: Chunk[]) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ text }),
+          body: JSON.stringify({ text, language }),
         });
         const data = await response.json();
 
@@ -85,7 +85,7 @@ export async function summarizeStream(chunks: Chunk[]) {
   return stream;
 }
 
-export async function generateQuickSummary(chunks: Chunk[]) {
+export async function generateQuickSummary(chunks: Chunk[], language: string) {
   const allSummaries = chunks.map((chunk) => chunk.summary).join("\n\n");
 
   const response = await fetch("/api/summarize", {
@@ -93,7 +93,7 @@ export async function generateQuickSummary(chunks: Chunk[]) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ text: allSummaries }),
+    body: JSON.stringify({ text: allSummaries, language }),
   });
 
   const { title, summary } = await response.json();
