@@ -83,9 +83,9 @@ export default function Home() {
     setQuickSummary(quickSummary);
     setImage(`data:image/png;base64,${image}`);
 
-    // setActiveChunkIndex((activeChunkIndex) =>
-    //   activeChunkIndex === null ? "quick-summary" : activeChunkIndex,
-    // );
+    setActiveChunkIndex((activeChunkIndex) =>
+      activeChunkIndex === null ? "quick-summary" : activeChunkIndex,
+    );
   }
 
   return (
