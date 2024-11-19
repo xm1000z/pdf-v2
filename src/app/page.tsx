@@ -33,14 +33,14 @@ export default function Home() {
     "idle",
   );
   const [file, setFile] = useState<File>();
-  // const [fileUrl, setFileUrl] = useState<string>();
-  // const [pdf, setPdf] = useState<PDFDocumentProxy>();
   const [chunks, setChunks] = useState<Chunk[]>([]);
   const [activeChunkIndex, setActiveChunkIndex] = useState<
     number | "quick-summary" | null
   >(null);
-  // const [controller, setController] = useState<AbortController>();
-  const [quickSummary, setQuickSummary] = useState<string>();
+  const [quickSummary, setQuickSummary] = useState<{
+    title: string;
+    summary: string;
+  }>();
   const [image, setImage] = useState<string>();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -67,9 +67,9 @@ export default function Home() {
       write(chunk) {
         summarizedChunks.push(chunk);
         setChunks((chunks) => {
-          return chunks.map((c) => {
-            return c.text === chunk.text ? { ...c, ...chunk } : c;
-          });
+          return chunks.map((c) =>
+            c.text === chunk.text ? { ...c, ...chunk } : c,
+          );
         });
       },
 
@@ -85,7 +85,7 @@ export default function Home() {
     await stream.pipeTo(writeStream, { signal: controller.signal });
 
     const quickSummary = await generateQuickSummary(summarizedChunks);
-    const image = await generateImage(quickSummary);
+    const image = await generateImage(quickSummary.summary);
 
     setQuickSummary(quickSummary);
     setImage(`data:image/png;base64,${image}`);
@@ -94,6 +94,8 @@ export default function Home() {
       activeChunkIndex === null ? "quick-summary" : activeChunkIndex,
     );
   }
+
+  console.log(chunks);
 
   return (
     <div>
@@ -197,10 +199,17 @@ export default function Home() {
                     />
                   )}
                   <hr className="-mx-4 my-8" />
-                  <div>{quickSummary}</div>
+                  <div>{quickSummary?.summary}</div>
                 </div>
               ) : activeChunkIndex !== null ? (
-                <div>{chunks[activeChunkIndex].summary}</div>
+                <div>
+                  <h2 className="font-semibold text-gray-900">
+                    {chunks[activeChunkIndex].title}
+                  </h2>
+                  <div className="mt-4 text-sm">
+                    {chunks[activeChunkIndex].summary}
+                  </div>
+                </div>
               ) : null}
             </div>
 
@@ -222,11 +231,18 @@ export default function Home() {
                   <Button
                     key={i}
                     variant="outline"
-                    className={`${activeChunkIndex === i ? "bg-white hover:bg-white" : ""} border-gray-250 inline-flex w-full justify-between px-4 py-6 text-base shadow-sm disabled:cursor-not-allowed`}
+                    className={`${activeChunkIndex === i ? "bg-white hover:bg-white" : "hover:bg-white"} border-gray-250 inline-flex h-auto w-full justify-between px-4 py-3 text-base shadow-sm transition disabled:cursor-not-allowed`}
                     disabled={!chunk.summary}
                     onClick={() => setActiveChunkIndex(i)}
                   >
-                    <span>Section {i + 1}</span>
+                    <span className="flex h-full min-w-0 flex-col justify-start text-left">
+                      <span className="text-xs font-medium uppercase text-gray-500">
+                        Section {i + 1}
+                      </span>
+                      <span className="truncate text-sm">
+                        {chunk.title ?? <>&hellip;</>}
+                      </span>
+                    </span>
                     <Spinner loading={!chunk.summary} />
                   </Button>
                 ))}

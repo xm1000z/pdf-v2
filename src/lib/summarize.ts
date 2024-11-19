@@ -1,8 +1,10 @@
 import { PDFDocumentProxy } from "pdfjs-dist";
+import assert from "assert";
 
 export type Chunk = {
   text: string;
   summary?: string;
+  title?: string;
 };
 
 export async function getPdfText(pdf: PDFDocumentProxy) {
@@ -65,6 +67,7 @@ export async function summarizeStream(chunks: Chunk[]) {
           controller.enqueue({
             ...chunk,
             summary: data.summary,
+            title: data.title,
           });
         }
       });
@@ -93,10 +96,12 @@ export async function generateQuickSummary(chunks: Chunk[]) {
     body: JSON.stringify({ text: allSummaries }),
   });
 
-  const data = await response.json();
-  const summary = data.summary;
+  const { title, summary } = await response.json();
 
-  return typeof summary === "string" ? summary : "No summary available";
+  assert.ok(typeof title === "string");
+  assert.ok(typeof summary === "string");
+
+  return { title, summary };
 }
 
 export async function generateImage(summary: string) {
