@@ -25,6 +25,8 @@ import Dropzone from "react-dropzone";
 import "pdfjs-dist/build/pdf.worker.mjs";
 import Image from "next/image";
 import SparklesIcon from "@/components/icons/sparkles";
+import HomepageImage1 from "@/components/images/homepage-image-1";
+import HomepageImage2 from "@/components/images/homepage-image-2";
 
 export default function Home() {
   const [status, setStatus] = useState<"idle" | "parsing" | "generating">(
@@ -96,62 +98,78 @@ export default function Home() {
   return (
     <div>
       {status === "idle" || status === "parsing" ? (
-        <div className="mx-auto max-w-lg">
-          <h1>Summarize PDFs in seconds</h1>
-          <p>Upload a PDF to get a quick, clear summary—your way.</p>
-          <form onSubmit={handleSubmit} className="mx-auto mt-16 max-w-sm">
-            <div className="flex flex-col rounded-xl bg-white p-12 shadow">
-              <label className="text-gray-300" htmlFor="file">
-                Upload PDF
-              </label>
-              <Dropzone
-                multiple={false}
-                // accept={{ "image/png": [".png", ".jpg", ".jpeg"] }}
-                onDrop={(acceptedFiles) => setFile(acceptedFiles[0])}
-              >
-                {({
-                  getRootProps,
-                  getInputProps,
-                  isDragAccept,
-                  acceptedFiles,
-                }) => (
-                  <div
-                    className={`mt-2 flex aspect-video cursor-pointer items-center justify-center rounded-lg border border-dashed bg-gray-100 ${isDragAccept ? "border-blue-500" : "border-gray-900/25"}`}
-                    {...getRootProps()}
-                  >
-                    <input {...getInputProps()} />
-                    <div className="text-center">
-                      {acceptedFiles.length > 0 ? (
-                        <p>{acceptedFiles[0].name}</p>
-                      ) : (
-                        <Button>Select PDF</Button>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </Dropzone>
-              <label className="mt-8 text-gray-300" htmlFor="language">
-                Language
-              </label>
-              <Select defaultValue="english">
-                <SelectTrigger className="bg-gray-100" id="language">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="english">English</SelectItem>
-                </SelectContent>
-              </Select>
+        <div className="mx-auto mt-10 max-w-lg">
+          <h1 className="text-center text-5xl font-bold">
+            Summarize PDFs
+            <br /> in seconds
+          </h1>
+          <p className="mx-auto mt-8 max-w-md text-balance text-center text-lg leading-snug">
+            Upload a <strong>PDF</strong> to get a quick, clear, and shareable
+            summary.
+          </p>
+
+          <form
+            onSubmit={handleSubmit}
+            className="relative mx-auto mt-16 max-w-md"
+          >
+            <div className="pointer-events-none absolute -left-[350px] -top-20">
+              <HomepageImage1 />
             </div>
-            <div className="mt-4 text-center">
-              <Button
-                type="submit"
-                variant="secondary"
-                className="border bg-white text-base font-semibold"
-                disabled={status === "parsing"}
-              >
-                <SparklesIcon />
-                Generate
-              </Button>
+            <div className="pointer-events-none absolute -right-[230px] -top-5">
+              <HomepageImage2 />
+            </div>
+
+            <div className="relative">
+              <div className="flex flex-col rounded-xl bg-white px-12 py-8 shadow">
+                <label className="text-gray-500" htmlFor="file">
+                  Upload PDF
+                </label>
+                <Dropzone
+                  multiple={false}
+                  // accept={{ "image/png": [".png", ".jpg", ".jpeg"] }}
+                  onDrop={(acceptedFiles) => setFile(acceptedFiles[0])}
+                >
+                  {({ getRootProps, getInputProps, isDragAccept }) => (
+                    <div
+                      className={`mt-2 flex aspect-video cursor-pointer items-center justify-center rounded-lg border border-dashed bg-gray-100 ${isDragAccept ? "border-blue-500" : "border-gray-250"}`}
+                      {...getRootProps()}
+                    >
+                      <input required={!file} {...getInputProps()} />
+                      <div className="text-center">
+                        {file ? (
+                          <p>{file.name}</p>
+                        ) : (
+                          <Button type="button" className="text-base">
+                            Select PDF
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </Dropzone>
+                <label className="mt-8 text-gray-500" htmlFor="language">
+                  Language
+                </label>
+                <Select defaultValue="english">
+                  <SelectTrigger className="mt-2 bg-gray-100" id="language">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="english">English</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="mt-8 text-center">
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  className="border bg-white text-base font-semibold"
+                  disabled={status === "parsing"}
+                >
+                  <SparklesIcon />
+                  Generate
+                </Button>
+              </div>
             </div>
           </form>
         </div>
