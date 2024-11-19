@@ -16,13 +16,10 @@ import {
   generateQuickSummary,
   summarizeStream,
 } from "@/lib/summarize";
-import { getDocument } from "pdfjs-dist";
-// import { getDocument, PDFDocumentProxy } from "pdfjs-dist";
+import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { FormEvent, useState } from "react";
 import Dropzone from "react-dropzone";
-
-// test early on vercel
-import "pdfjs-dist/build/pdf.worker.mjs";
+import "pdfjs-dist/legacy/build/pdf.worker.mjs";
 import Image from "next/image";
 import SparklesIcon from "@/components/icons/sparkles";
 import HomepageImage1 from "@/components/images/homepage-image-1";
