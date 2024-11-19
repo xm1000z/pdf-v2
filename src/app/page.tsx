@@ -27,6 +27,7 @@ import Image from "next/image";
 import SparklesIcon from "@/components/icons/sparkles";
 import HomepageImage1 from "@/components/images/homepage-image-1";
 import HomepageImage2 from "@/components/images/homepage-image-2";
+import { LinkIcon, MenuIcon } from "lucide-react";
 
 export default function Home() {
   const [status, setStatus] = useState<"idle" | "parsing" | "generating">(
@@ -42,6 +43,7 @@ export default function Home() {
     summary: string;
   }>();
   const [image, setImage] = useState<string>();
+  const [showMobileContents, setShowMobileContents] = useState(true);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -81,37 +83,37 @@ export default function Home() {
     setQuickSummary(quickSummary);
     setImage(`data:image/png;base64,${image}`);
 
-    setActiveChunkIndex((activeChunkIndex) =>
-      activeChunkIndex === null ? "quick-summary" : activeChunkIndex,
-    );
+    // setActiveChunkIndex((activeChunkIndex) =>
+    //   activeChunkIndex === null ? "quick-summary" : activeChunkIndex,
+    // );
   }
 
   return (
     <div>
       {status === "idle" || status === "parsing" ? (
-        <div className="mx-auto mt-10 max-w-lg">
-          <h1 className="text-center text-5xl font-bold">
+        <div className="mx-auto mt-6 max-w-lg md:mt-10">
+          <h1 className="text-center text-4xl font-bold md:text-5xl">
             Summarize PDFs
             <br /> in seconds
           </h1>
-          <p className="mx-auto mt-8 max-w-md text-balance text-center text-lg leading-snug">
+          <p className="mx-auto mt-4 max-w-md text-balance text-center leading-snug md:text-lg">
             Upload a <strong>PDF</strong> to get a quick, clear, and shareable
             summary.
           </p>
 
           <form
             onSubmit={handleSubmit}
-            className="relative mx-auto mt-16 max-w-md"
+            className="relative mx-auto mt-20 max-w-md px-4 md:mt-16"
           >
-            <div className="pointer-events-none absolute -left-[350px] -top-20">
+            <div className="pointer-events-none absolute left-[-40px] top-[-185px] flex w-[200px] items-center md:-left-[calc(min(30vw,350px))] md:-top-20 md:w-[390px]">
               <HomepageImage1 />
             </div>
-            <div className="pointer-events-none absolute -right-[230px] -top-5">
+            <div className="pointer-events-none absolute right-[20px] top-[-110px] flex w-[70px] justify-center md:-right-[calc(min(30vw,350px))] md:-top-5 md:w-[390px]">
               <HomepageImage2 />
             </div>
 
             <div className="relative">
-              <div className="flex flex-col rounded-xl bg-white px-12 py-8 shadow">
+              <div className="flex flex-col rounded-xl bg-white px-6 py-6 shadow md:px-12 md:py-8">
                 <label className="text-gray-500" htmlFor="file">
                   Upload PDF
                 </label>
@@ -132,7 +134,7 @@ export default function Home() {
                         {file ? (
                           <p>{file.name}</p>
                         ) : (
-                          <Button type="button" className="text-base">
+                          <Button type="button" className="md:text-base">
                             Select PDF
                           </Button>
                         )}
@@ -169,7 +171,7 @@ export default function Home() {
                 <Button
                   type="submit"
                   variant="secondary"
-                  className="border bg-white/80 text-base font-semibold hover:bg-white"
+                  className="w-60 border bg-white/80 text-base font-semibold hover:bg-white md:w-auto"
                   disabled={status === "parsing"}
                 >
                   <SparklesIcon />
@@ -180,86 +182,142 @@ export default function Home() {
           </form>
         </div>
       ) : (
-        <div className="mx-auto max-w-3xl">
-          <div className="border-gray-250 flex items-center justify-between rounded-xl border px-6 py-3">
-            <p className="text-lg">{file?.name}</p>
-
-            <div>
-              <Button>Share</Button>
-            </div>
-          </div>
-
-          <div className="mt-4 flex gap-4">
-            <div className="w-full grow rounded-xl bg-white p-5 text-gray-500 shadow">
-              {activeChunkIndex === "quick-summary" ? (
-                <div>
-                  {image && (
-                    <Image
-                      className="rounded-md"
-                      src={image}
-                      width={1280}
-                      height={720}
-                      alt=""
-                    />
-                  )}
-                  <hr className="-mx-5 my-8" />
-                  <h2 className="font-semibold text-gray-900">
-                    {quickSummary?.title}
-                  </h2>
-                  <div className="mt-4 whitespace-pre-wrap text-sm">
-                    {quickSummary?.summary}
-                  </div>
-                </div>
-              ) : activeChunkIndex !== null ? (
-                <div>
-                  <h2 className="font-semibold text-gray-900">
-                    {chunks[activeChunkIndex].title}
-                  </h2>
-                  <div className="mt-4 whitespace-pre-wrap text-sm">
-                    {chunks[activeChunkIndex].summary}
-                  </div>
-                </div>
-              ) : null}
+        <div className="mt-6 px-4 md:mt-10">
+          <div className="mx-auto max-w-3xl">
+            <div className="border-gray-250 flex items-center justify-between rounded-lg border px-4 py-2 md:px-6 md:py-3">
+              <p className="md:text-lg">{file?.name}</p>
+              <div className="md:hidden">
+                <Button size="icon">
+                  <LinkIcon />
+                </Button>
+              </div>
+              <div className="hidden md:block">
+                <Button>
+                  <LinkIcon />
+                  Share
+                </Button>
+              </div>
             </div>
 
-            <div className="flex w-full max-w-60 shrink-0 flex-col gap-4">
+            <div className="mt-8 rounded-lg bg-gray-200 px-4 py-2 shadow md:hidden">
               <Button
-                variant="outline"
-                className={`${activeChunkIndex === "quick-summary" ? "bg-white hover:bg-white" : ""} border-gray-250 inline-flex w-full justify-between px-4 py-6 text-base font-semibold shadow-sm`}
-                onClick={() => setActiveChunkIndex("quick-summary")}
-                disabled={!quickSummary}
+                onClick={() => setShowMobileContents(!showMobileContents)}
+                className="w-full text-gray-500 hover:bg-transparent"
+                variant="ghost"
               >
-                Quick summary
-                <Spinner loading={!quickSummary} />
+                <MenuIcon />
+                {showMobileContents ? "Hide" : "Show"} contents
               </Button>
 
-              <hr />
+              {showMobileContents && (
+                <div className="mt-4">
+                  <TableOfContents
+                    activeChunkIndex={activeChunkIndex}
+                    setActiveChunkIndex={setActiveChunkIndex}
+                    quickSummary={quickSummary}
+                    chunks={chunks}
+                  />
+                </div>
+              )}
+            </div>
 
-              <div className="flex flex-col gap-2">
-                {chunks.map((chunk, i) => (
-                  <Button
-                    key={i}
-                    variant="outline"
-                    className={`${activeChunkIndex === i ? "bg-white hover:bg-white" : "hover:bg-white"} border-gray-250 inline-flex h-auto w-full justify-between px-4 py-3 text-base shadow-sm transition disabled:cursor-not-allowed`}
-                    disabled={!chunk.summary}
-                    onClick={() => setActiveChunkIndex(i)}
-                  >
-                    <span className="flex h-full min-w-0 flex-col justify-start text-left">
-                      <span className="text-xs font-medium uppercase text-gray-500">
-                        Section {i + 1}
-                      </span>
-                      <span className="truncate text-sm">
-                        {chunk.title ?? <>&hellip;</>}
-                      </span>
-                    </span>
-                    <Spinner loading={!chunk.summary} />
-                  </Button>
-                ))}
+            <div className="mt-4 flex gap-4">
+              <div className="w-full grow rounded-lg bg-white p-5 text-gray-500 shadow">
+                {activeChunkIndex === "quick-summary" ? (
+                  <div>
+                    {image && (
+                      <Image
+                        className="rounded-md"
+                        src={image}
+                        width={1280}
+                        height={720}
+                        alt=""
+                      />
+                    )}
+                    <hr className="-mx-5 my-8" />
+                    <h2 className="font-semibold text-gray-900">
+                      {quickSummary?.title}
+                    </h2>
+                    <div className="mt-4 whitespace-pre-wrap text-sm">
+                      {quickSummary?.summary}
+                    </div>
+                  </div>
+                ) : activeChunkIndex !== null ? (
+                  <div>
+                    <h2 className="font-semibold text-gray-900">
+                      {chunks[activeChunkIndex].title}
+                    </h2>
+                    <div className="mt-4 whitespace-pre-wrap text-sm">
+                      {chunks[activeChunkIndex].summary}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex animate-pulse items-center justify-center py-4 text-lg md:py-8">
+                    Generating your Smart PDF&hellip;
+                  </div>
+                )}
+              </div>
+
+              <div className="hidden w-full max-w-60 shrink-0 md:flex">
+                <TableOfContents
+                  activeChunkIndex={activeChunkIndex}
+                  setActiveChunkIndex={setActiveChunkIndex}
+                  quickSummary={quickSummary}
+                  chunks={chunks}
+                />
               </div>
             </div>
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function TableOfContents({
+  activeChunkIndex,
+  setActiveChunkIndex,
+  quickSummary,
+  chunks,
+}: {
+  activeChunkIndex: number | "quick-summary" | null;
+  setActiveChunkIndex: (index: number | "quick-summary" | null) => void;
+  quickSummary: { title: string; summary: string } | undefined;
+  chunks: Chunk[];
+}) {
+  return (
+    <div className="flex w-full min-w-0 flex-col gap-4">
+      <Button
+        variant="outline"
+        className={`${activeChunkIndex === "quick-summary" ? "bg-white hover:bg-white" : "hover:bg-gray-200"} border-gray-250 inline-flex w-full justify-between px-4 py-6 text-base font-semibold shadow-sm`}
+        onClick={() => setActiveChunkIndex("quick-summary")}
+        disabled={!quickSummary}
+      >
+        Quick summary
+        <Spinner loading={!quickSummary} />
+      </Button>
+      <hr />
+      <div className="flex flex-col gap-2">
+        {chunks.map((chunk, i) => (
+          <Button
+            key={i}
+            variant="outline"
+            className={`${activeChunkIndex === i ? "bg-white hover:bg-white" : "hover:bg-gray-200"} border-gray-250 inline-flex h-auto w-full justify-between px-4 py-3 text-base shadow-sm transition disabled:cursor-not-allowed`}
+            disabled={!chunk.summary}
+            onClick={() => setActiveChunkIndex(i)}
+          >
+            <span className="flex h-full min-w-0 flex-col justify-start text-left">
+              <span className="text-xs font-medium uppercase text-gray-500">
+                Section {i + 1}
+              </span>
+              <span className="truncate text-sm">
+                {chunk.title ?? <>&hellip;</>}
+              </span>
+            </span>
+            <Spinner loading={!chunk.summary} />
+          </Button>
+        ))}
+      </div>
     </div>
   );
 }

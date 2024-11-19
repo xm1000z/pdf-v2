@@ -37,9 +37,11 @@ export default function RootLayout({
             <Logo />
           </Link>
         </header>
+
         <main className="grow">{children}</main>
-        <footer className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-6">
-          <p className="text-sm text-gray-300">
+
+        <footer className="mx-auto mt-14 flex w-full max-w-7xl items-center justify-between px-4 py-6 md:mt-0">
+          <p className="text-xs text-gray-300 md:text-sm">
             Powered by{" "}
             <Link
               className="underline transition hover:text-gray-900"
@@ -56,9 +58,9 @@ export default function RootLayout({
             </Link>
           </p>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <Link
-              className="border-gray-250 inline-flex items-center gap-1 rounded-xl border bg-white px-4 py-1.5 text-sm text-gray-300 shadow transition hover:bg-white/75"
+              className="border-gray-250 inline-flex items-center gap-1 rounded-lg border bg-white px-2 py-1.5 text-xs text-gray-300 shadow transition hover:bg-white/75 md:rounded-xl md:px-4 md:text-sm"
               href="#"
             >
               <GithubIcon className="size-4" />
@@ -66,7 +68,7 @@ export default function RootLayout({
             </Link>
             <Link
               href="#"
-              className="border-gray-250 inline-flex items-center gap-1 rounded-xl border bg-white px-4 py-1.5 text-sm text-gray-300 shadow transition hover:bg-white/75"
+              className="border-gray-250 inline-flex items-center gap-1 rounded-lg border bg-white px-2 py-1.5 text-xs text-gray-300 shadow transition hover:bg-white/75 md:rounded-xl md:px-4 md:text-sm"
             >
               <XIcon className="size-3" />
               Twitter
