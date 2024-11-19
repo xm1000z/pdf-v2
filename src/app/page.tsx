@@ -198,8 +198,11 @@ export default function Home() {
                       alt=""
                     />
                   )}
-                  <hr className="-mx-4 my-8" />
-                  <div>{quickSummary?.summary}</div>
+                  <hr className="-mx-5 my-8" />
+                  <h2 className="font-semibold text-gray-900">
+                    {quickSummary?.title}
+                  </h2>
+                  <div className="mt-4 text-sm">{quickSummary?.summary}</div>
                 </div>
               ) : activeChunkIndex !== null ? (
                 <div>
@@ -216,7 +219,7 @@ export default function Home() {
             <div className="flex w-full max-w-60 shrink-0 flex-col gap-4">
               <Button
                 variant="outline"
-                className={`${activeChunkIndex === "quick-summary" ? "bg-white hover:bg-white" : ""} border-gray-250 inline-flex w-full justify-between px-4 py-6 text-base shadow-sm`}
+                className={`${activeChunkIndex === "quick-summary" ? "bg-white hover:bg-white" : ""} border-gray-250 inline-flex w-full justify-between px-4 py-6 text-base font-semibold shadow-sm`}
                 onClick={() => setActiveChunkIndex("quick-summary")}
                 disabled={!quickSummary}
               >
