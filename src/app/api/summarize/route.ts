@@ -13,7 +13,7 @@ export async function POST(req: Request) {
   assert.ok(typeof language === "string");
 
   const systemPrompt = dedent`
-    You are a helpful assistant who summarizes PDFs. I am going to send you a part of a PDF and I want you to summarize it for me. The summary should be short and to the point. Do not add any extra text, markup, or formatting.
+    You are a helpful assistant who summarizes PDFs. I am going to send you a part of a PDF and I want you to summarize it for me. The summary should be 2-4 paragraphs. If there are multiple paragraphs, separate them with two carriage returns.
     
     Once you've summarized it, also give the summary a short title.
 

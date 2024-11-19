@@ -204,14 +204,16 @@ export default function Home() {
                   <h2 className="font-semibold text-gray-900">
                     {quickSummary?.title}
                   </h2>
-                  <div className="mt-4 text-sm">{quickSummary?.summary}</div>
+                  <div className="mt-4 whitespace-pre-wrap text-sm">
+                    {quickSummary?.summary}
+                  </div>
                 </div>
               ) : activeChunkIndex !== null ? (
                 <div>
                   <h2 className="font-semibold text-gray-900">
                     {chunks[activeChunkIndex].title}
                   </h2>
-                  <div className="mt-4 text-sm">
+                  <div className="mt-4 whitespace-pre-wrap text-sm">
                     {chunks[activeChunkIndex].summary}
                   </div>
                 </div>
