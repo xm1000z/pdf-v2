@@ -117,7 +117,9 @@ export default function Home() {
                 </label>
                 <Dropzone
                   multiple={false}
-                  // accept={{ "image/png": [".png", ".jpg", ".jpeg"] }}
+                  accept={{
+                    "application/pdf": [".pdf"],
+                  }}
                   onDrop={(acceptedFiles) => setFile(acceptedFiles[0])}
                 >
                   {({ getRootProps, getInputProps, isDragAccept }) => (
@@ -167,7 +169,7 @@ export default function Home() {
                 <Button
                   type="submit"
                   variant="secondary"
-                  className="border bg-white text-base font-semibold"
+                  className="border bg-white/80 text-base font-semibold hover:bg-white"
                   disabled={status === "parsing"}
                 >
                   <SparklesIcon />
