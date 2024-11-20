@@ -25,6 +25,7 @@ import SparklesIcon from "@/components/icons/sparkles";
 import HomepageImage1 from "@/components/images/homepage-image-1";
 import HomepageImage2 from "@/components/images/homepage-image-2";
 import { LinkIcon, MenuIcon } from "lucide-react";
+import { sharePdf } from "@/app/actions";
 
 export default function Home() {
   const [status, setStatus] = useState<"idle" | "parsing" | "generating">(
@@ -183,17 +184,43 @@ export default function Home() {
           <div className="mx-auto max-w-3xl">
             <div className="flex items-center justify-between rounded-lg border border-gray-250 px-4 py-2 md:px-6 md:py-3">
               <p className="md:text-lg">{file?.name}</p>
-              <div className="md:hidden">
-                <Button size="icon">
-                  <LinkIcon />
-                </Button>
-              </div>
-              <div className="hidden md:block">
-                <Button>
-                  <LinkIcon />
-                  Share
-                </Button>
-              </div>
+              <form
+                action={async () => {
+                  if (!file || !quickSummary) return;
+
+                  await sharePdf({
+                    pdfName: file.name,
+                    sections: [
+                      {
+                        type: "quick-summary",
+                        title: quickSummary.title,
+                        text: quickSummary.summary,
+                        position: 0,
+                      },
+                      ...chunks.map((chunk, index) => ({
+                        type: "summary",
+                        title: chunk?.title ?? "",
+                        text: chunk?.summary ?? "",
+                        position: index + 1,
+                      })),
+                    ],
+                  });
+                }}
+              >
+                <fieldset disabled={!quickSummary}>
+                  <div className="md:hidden">
+                    <Button type="submit" size="icon">
+                      <LinkIcon />
+                    </Button>
+                  </div>
+                  <div className="hidden md:block">
+                    <Button type="submit">
+                      <LinkIcon />
+                      Share
+                    </Button>
+                  </div>
+                </fieldset>
+              </form>
             </div>
 
             <div className="mt-8 rounded-lg bg-gray-200 px-4 py-2 shadow md:hidden">

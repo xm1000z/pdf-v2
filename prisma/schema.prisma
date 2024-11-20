@@ -16,8 +16,8 @@ datasource db {
 model SmartPDF {
   id        String   @id @default(nanoid(5))
   createdAt DateTime @default(now())
-  imageUrl  String
-  pdfUrl    String
+  imageUrl  String?
+  pdfUrl    String?
   pdfName   String
 
   sections Section[]
