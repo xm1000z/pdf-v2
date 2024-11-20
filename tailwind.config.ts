@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import colors from "tailwindcss/colors";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { gray, ...rest } = colors;
@@ -73,5 +74,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;
