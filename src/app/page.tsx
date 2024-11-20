@@ -25,15 +25,17 @@ import Image from "next/image";
 import SparklesIcon from "@/components/icons/sparkles";
 import HomepageImage1 from "@/components/images/homepage-image-1";
 import HomepageImage2 from "@/components/images/homepage-image-2";
-import { LinkIcon, MenuIcon } from "lucide-react";
+import { LinkIcon, MenuIcon, SquareArrowOutUpRight } from "lucide-react";
 import { sharePdf } from "@/app/actions";
 import ActionButton from "@/components/ui/action-button";
+import Link from "next/link";
 
 export default function Home() {
   const [status, setStatus] = useState<"idle" | "parsing" | "generating">(
     "idle",
   );
   const [file, setFile] = useState<File>();
+  const [fileUrl, setFileUrl] = useState("");
   const [chunks, setChunks] = useState<Chunk[]>([]);
   const [activeChunkIndex, setActiveChunkIndex] = useState<
     number | "quick-summary" | null
@@ -152,7 +154,11 @@ export default function Home() {
                   accept={{
                     "application/pdf": [".pdf"],
                   }}
-                  onDrop={(acceptedFiles) => setFile(acceptedFiles[0])}
+                  onDrop={(acceptedFiles) => {
+                    const fileUrl = URL.createObjectURL(acceptedFiles[0]);
+                    setFile(acceptedFiles[0]);
+                    setFileUrl(fileUrl);
+                  }}
                 >
                   {({ getRootProps, getInputProps, isDragAccept }) => (
                     <div
@@ -215,7 +221,13 @@ export default function Home() {
         <div className="mt-6 px-4 md:mt-10">
           <div className="mx-auto max-w-3xl">
             <div className="flex items-center justify-between rounded-lg border border-gray-250 px-4 py-2 md:px-6 md:py-3">
-              <p className="md:text-lg">{file?.name}</p>
+              <div className="inline-flex items-center gap-4">
+                <p className="md:text-lg">{file?.name}</p>
+                <Link href={fileUrl} target="_blank">
+                  <SquareArrowOutUpRight size={14} />
+                </Link>
+              </div>
+
               <form action={shareAction}>
                 <fieldset disabled={!quickSummary}>
                   <div className="md:hidden">

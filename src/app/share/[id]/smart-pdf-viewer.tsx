@@ -28,7 +28,7 @@ export default function SmartPDFViewer({
         <div className="flex items-center gap-4 rounded-lg border border-gray-250 px-4 py-2 md:px-6 md:py-3">
           <p className="md:text-lg">{smartPdf.pdfName}</p>
           <Link href={smartPdf.pdfUrl} target="_blank">
-            <SquareArrowOutUpRight size={16} />
+            <SquareArrowOutUpRight size={14} />
           </Link>
         </div>
 
