@@ -7,13 +7,23 @@ import { useFormStatus } from "react-dom";
 
 export default function ActionButton({
   children,
+  className,
   ...rest
 }: ComponentProps<typeof Button>) {
   const { pending } = useFormStatus();
 
   return (
-    <Button {...rest} disabled={pending}>
-      <Spinner loading={pending}>{children}</Spinner>
-    </Button>
+    <span className="relative">
+      <Button
+        className={`${className} ${pending ? "*:invisible" : ""}`}
+        disabled={pending}
+        {...rest}
+      >
+        {children}
+      </Button>
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-white">
+        <Spinner loading={pending} className="size-4" />
+      </div>
+    </span>
   );
 }

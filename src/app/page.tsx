@@ -238,7 +238,7 @@ export default function Home() {
                   <div className="hidden md:block">
                     <ActionButton type="submit">
                       <LinkIcon />
-                      Share
+                      <span>Share</span>
                     </ActionButton>
                   </div>
                 </fieldset>
