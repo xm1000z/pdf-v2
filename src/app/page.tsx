@@ -93,7 +93,7 @@ export default function Home() {
             Summarize PDFs
             <br /> in seconds
           </h1>
-          <p className="mx-auto mt-4 max-w-md text-balance text-center leading-snug md:text-lg">
+          <p className="mx-auto mt-6 max-w-md text-balance text-center leading-snug md:text-lg md:leading-snug">
             Upload a <strong>PDF</strong> to get a quick, clear, and shareable
             summary.
           </p>
@@ -181,7 +181,7 @@ export default function Home() {
       ) : (
         <div className="mt-6 px-4 md:mt-10">
           <div className="mx-auto max-w-3xl">
-            <div className="border-gray-250 flex items-center justify-between rounded-lg border px-4 py-2 md:px-6 md:py-3">
+            <div className="flex items-center justify-between rounded-lg border border-gray-250 px-4 py-2 md:px-6 md:py-3">
               <p className="md:text-lg">{file?.name}</p>
               <div className="md:hidden">
                 <Button size="icon">
@@ -286,7 +286,7 @@ function TableOfContents({
     <div className="flex w-full min-w-0 flex-col gap-4">
       <Button
         variant="outline"
-        className={`${activeChunkIndex === "quick-summary" ? "bg-white hover:bg-white" : "hover:bg-gray-200"} border-gray-250 inline-flex w-full justify-between px-4 py-6 text-base font-semibold shadow-sm`}
+        className={`${activeChunkIndex === "quick-summary" ? "bg-white hover:bg-white" : "hover:bg-gray-200"} inline-flex w-full justify-between border-gray-250 px-4 py-6 text-base font-semibold shadow-sm`}
         onClick={() => setActiveChunkIndex("quick-summary")}
         disabled={!quickSummary}
       >
@@ -299,7 +299,7 @@ function TableOfContents({
           <Button
             key={i}
             variant="outline"
-            className={`${activeChunkIndex === i ? "bg-white hover:bg-white" : "hover:bg-gray-200"} border-gray-250 inline-flex h-auto w-full justify-between px-4 py-3 text-base shadow-sm transition disabled:cursor-not-allowed`}
+            className={`${activeChunkIndex === i ? "bg-white hover:bg-white" : "hover:bg-gray-200"} inline-flex h-auto w-full justify-between border-gray-250 px-4 py-3 text-base shadow-sm transition disabled:cursor-not-allowed`}
             disabled={!chunk.summary}
             onClick={() => setActiveChunkIndex(i)}
           >
