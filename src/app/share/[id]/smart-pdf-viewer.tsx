@@ -1,12 +1,12 @@
 "use client";
 
-import { sharePdf } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import Spinner from "@/components/ui/spinner";
 import { Chunk } from "@/lib/summarize";
 import { Section, SmartPDF } from "@prisma/client";
-import { LinkIcon, MenuIcon } from "lucide-react";
+import { MenuIcon, SquareArrowOutUpRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function SmartPDFViewer({
@@ -19,11 +19,17 @@ export default function SmartPDFViewer({
     number | "quick-summary"
   >("quick-summary");
 
+  const quickSummary = smartPdf.sections[0];
+  const chunks = smartPdf.sections.slice(1);
+
   return (
     <div className="mt-6 px-4 md:mt-10">
       <div className="mx-auto max-w-3xl">
-        <div className="flex items-center justify-between rounded-lg border border-gray-250 px-4 py-2 md:px-6 md:py-3">
+        <div className="flex items-center gap-4 rounded-lg border border-gray-250 px-4 py-2 md:px-6 md:py-3">
           <p className="md:text-lg">{smartPdf.pdfName}</p>
+          <Link href={smartPdf.pdfUrl} target="_blank">
+            <SquareArrowOutUpRight size={16} />
+          </Link>
         </div>
 
         <div className="mt-8 rounded-lg bg-gray-200 px-4 py-2 shadow md:hidden">
@@ -41,8 +47,8 @@ export default function SmartPDFViewer({
               <TableOfContents
                 activeChunkIndex={activeChunkIndex}
                 setActiveChunkIndex={setActiveChunkIndex}
-                quickSummary={quickSummary}
-                chunks={chunks}
+                quickSummary={smartPdf.sections[0]}
+                chunks={smartPdf.sections.slice(1)}
               />
             </div>
           )}
@@ -52,10 +58,10 @@ export default function SmartPDFViewer({
           <div className="w-full grow rounded-lg bg-white p-5 text-gray-500 shadow">
             {activeChunkIndex === "quick-summary" ? (
               <div>
-                {image && (
+                {smartPdf.imageUrl && (
                   <Image
                     className="rounded-md"
-                    src={image}
+                    src={smartPdf.imageUrl}
                     width={1280}
                     height={720}
                     alt=""
@@ -63,10 +69,10 @@ export default function SmartPDFViewer({
                 )}
                 <hr className="-mx-5 my-8" />
                 <h2 className="font-semibold text-gray-900">
-                  {quickSummary?.title}
+                  {quickSummary.title}
                 </h2>
                 <div className="mt-4 whitespace-pre-wrap text-sm">
-                  {quickSummary?.summary}
+                  {quickSummary.summary}
                 </div>
               </div>
             ) : activeChunkIndex !== null ? (
@@ -108,7 +114,7 @@ function TableOfContents({
   activeChunkIndex: number | "quick-summary" | null;
   setActiveChunkIndex: (index: number | "quick-summary") => void;
   quickSummary: { title: string; summary: string } | undefined;
-  chunks: Chunk[];
+  chunks: Omit<Chunk, "text">[];
 }) {
   return (
     <div className="flex w-full min-w-0 flex-col gap-4">

@@ -16,8 +16,8 @@ datasource db {
 model SmartPDF {
   id        String   @id @default(nanoid(5))
   createdAt DateTime @default(now())
-  imageUrl  String?
-  pdfUrl    String?
+  imageUrl  String
+  pdfUrl    String
   pdfName   String
 
   sections Section[]
@@ -27,7 +27,7 @@ model Section {
   id       String @id @default(nanoid(5))
   type     String
   title    String
-  text     String
+  summary  String
   position Int
 
   SmartPDF   SmartPDF @relation(fields: [smartPDFId], references: [id])

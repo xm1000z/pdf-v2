@@ -1,5 +1,6 @@
 "use client";
 
+import { useS3Upload } from "next-s3-upload";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -26,6 +27,7 @@ import HomepageImage1 from "@/components/images/homepage-image-1";
 import HomepageImage2 from "@/components/images/homepage-image-2";
 import { LinkIcon, MenuIcon } from "lucide-react";
 import { sharePdf } from "@/app/actions";
+import ActionButton from "@/components/ui/action-button";
 
 export default function Home() {
   const [status, setStatus] = useState<"idle" | "parsing" | "generating">(
@@ -42,6 +44,7 @@ export default function Home() {
   }>();
   const [image, setImage] = useState<string>();
   const [showMobileContents, setShowMobileContents] = useState(true);
+  const { uploadToS3 } = useS3Upload();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -84,6 +87,35 @@ export default function Home() {
     setActiveChunkIndex((activeChunkIndex) =>
       activeChunkIndex === null ? "quick-summary" : activeChunkIndex,
     );
+  }
+
+  async function shareAction() {
+    if (!file || !quickSummary || !image) return;
+
+    const uploadedPdf = await uploadToS3(file);
+    const uploadedImage = await uploadToS3(
+      base64ToFile(image, "image.png", "image/png"),
+    );
+
+    await sharePdf({
+      pdfName: file.name,
+      pdfUrl: uploadedPdf.url,
+      imageUrl: uploadedImage.url,
+      sections: [
+        {
+          type: "quick-summary",
+          title: quickSummary.title,
+          summary: quickSummary.summary,
+          position: 0,
+        },
+        ...chunks.map((chunk, index) => ({
+          type: "summary",
+          title: chunk?.title ?? "",
+          summary: chunk?.summary ?? "",
+          position: index + 1,
+        })),
+      ],
+    });
   }
 
   return (
@@ -184,40 +216,18 @@ export default function Home() {
           <div className="mx-auto max-w-3xl">
             <div className="flex items-center justify-between rounded-lg border border-gray-250 px-4 py-2 md:px-6 md:py-3">
               <p className="md:text-lg">{file?.name}</p>
-              <form
-                action={async () => {
-                  if (!file || !quickSummary) return;
-
-                  await sharePdf({
-                    pdfName: file.name,
-                    sections: [
-                      {
-                        type: "quick-summary",
-                        title: quickSummary.title,
-                        text: quickSummary.summary,
-                        position: 0,
-                      },
-                      ...chunks.map((chunk, index) => ({
-                        type: "summary",
-                        title: chunk?.title ?? "",
-                        text: chunk?.summary ?? "",
-                        position: index + 1,
-                      })),
-                    ],
-                  });
-                }}
-              >
+              <form action={shareAction}>
                 <fieldset disabled={!quickSummary}>
                   <div className="md:hidden">
-                    <Button type="submit" size="icon">
+                    <ActionButton type="submit" size="icon">
                       <LinkIcon />
-                    </Button>
+                    </ActionButton>
                   </div>
                   <div className="hidden md:block">
-                    <Button type="submit">
+                    <ActionButton type="submit">
                       <LinkIcon />
                       Share
-                    </Button>
+                    </ActionButton>
                   </div>
                 </fieldset>
               </form>
@@ -344,4 +354,32 @@ function TableOfContents({
       </div>
     </div>
   );
+}
+
+function base64ToFile(
+  base64String: string,
+  fileName: string,
+  mimeType: string,
+): File {
+  // Ensure the Base64 string has the correct format
+  if (!base64String.startsWith("data:")) {
+    throw new Error(
+      "Invalid Base64 string format. It must include the data URI scheme (e.g., data:image/png;base64,...)",
+    );
+  }
+
+  // Decode the Base64 string
+  const byteString = atob(base64String.split(",")[1]);
+
+  // Create a typed array from the binary string
+  const byteArray = new Uint8Array(byteString.length);
+  for (let i = 0; i < byteString.length; i++) {
+    byteArray[i] = byteString.charCodeAt(i);
+  }
+
+  // Create a Blob from the typed array
+  const blob = new Blob([byteArray], { type: mimeType });
+
+  // Create and return the File object
+  return new File([blob], fileName, { type: mimeType });
 }

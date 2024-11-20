@@ -44,7 +44,7 @@ export default function Spinner({
 
   return (
     <span className="relative flex h-full items-center justify-center">
-      <span className="invisible">{children}</span>
+      <span className="invisible flex">{children}</span>
 
       <span className="absolute inset-0 flex items-center justify-center">
         {spinner}
