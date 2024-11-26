@@ -4,10 +4,13 @@
 
 - [x] Look into why it takes so long at times
 - [x] Look into weird \\ tokens
+
+PAUSED UNTIL FAST JSON MODE IS OUT.
+
 - [ ] Newlines for summaries
+- [ ] Reject PDFs that are too large or over X pages (maybe 1k?)
 - [ ] Try out finetuned models (likely won't go with them)
 - [ ] Don't have a PDF? Try out this one w/ synthetic loading
-- [ ] Reject PDFs that are too large or over X pages (maybe 1k?)
 - [ ] Add OG image & metadata + analytics
 - [ ] Add new S3 bucket for Smart PDFs
 - [ ] Maybe add more parsing to make sure its JSON

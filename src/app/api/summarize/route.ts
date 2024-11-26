@@ -21,7 +21,7 @@ export async function POST(req: Request) {
   assert.ok(typeof language === "string");
 
   const systemPrompt = dedent`
-    You are an expert at synthesizing and summarizing text. I am going to send you a part of a document and I want you to summarize it for me. The summary should be 2-4 paragraphs. Once you've summarized it, also give the summary a short title.
+    You are an expert at synthesizing and summarizing text. I am going to send you a part of a document and I want you to summarize it for me. Once you've summarized it, also give the summary a short title.
 
     You speak several languages. For this query, please respond in ${language}.
 
@@ -42,11 +42,9 @@ export async function POST(req: Request) {
     ],
   });
 
-  return new Response(response.choices[0].message?.content, {
-    headers: {
-      "content-type": "application/json",
-    },
-  });
+  const content = response.choices[0].message?.content;
+
+  return Response.json(content);
 }
 
 export const runtime = "edge";
