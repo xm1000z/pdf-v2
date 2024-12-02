@@ -28,7 +28,7 @@ export default function RootLayout({
         className={`${font.variable} flex min-h-full flex-col bg-gray-100 font-[family-name:var(--font-plus-jakarta-sans)] text-gray-900 antialiased`}
       >
         <header className="py-6 text-center">
-          <Link href="/" className="inline-flex justify-center">
+          <Link href="/" replace={true} className="inline-flex justify-center">
             <Logo />
           </Link>
         </header>

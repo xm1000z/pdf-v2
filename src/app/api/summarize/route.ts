@@ -21,15 +21,15 @@ export async function POST(req: Request) {
   assert.ok(typeof language === "string");
 
   const systemPrompt = dedent`
-    You are an expert at synthesizing and summarizing text. I am going to send you a part of a document and I want you to summarize it for me. Once you've summarized it, also give the summary a short title.
+    You are an expert at synthesizing and summarizing text. I am going to send you a part of a PDF and I want you to concisely summarize it for me in about 2-4 paragraphs (with proper spacing) and generate a short title for the summary, all in ${language}.
 
-    You speak several languages. For this query, please respond in ${language}.
-
-    Only answer with the title and summary in JSON. {title: string, summary: string}. It's very important for my job that you ONLY respond with the JSON and nothing else.
+    - Think carefully step by step and make sure to cover all the important points
+    - Only answer with the title and summary in JSON. {title: string, summary: string}
+    - It's VERY important for my job that you ONLY respond with the JSON and nothing else.
   `;
 
   const response = await client.chat.completions.create({
-    model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+    model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
     messages: [
       {
         role: "system",
@@ -44,7 +44,34 @@ export async function POST(req: Request) {
 
   const content = response.choices[0].message?.content;
 
-  return Response.json(content);
+  if (!content) {
+    console.log("Content was blank");
+    return;
+  }
+
+  let JSONContent;
+  try {
+    JSONContent = JSON.parse(content);
+  } catch {
+    console.log("Error parsing JSON");
+    const titleMatch = content.match(/"title"\s*:\s*"([^"]+)"/);
+    const summaryMatch = content.match(/"summary"\s*:\s*"([^"]+)"/);
+
+    if (titleMatch && summaryMatch) {
+      JSONContent = {
+        title: titleMatch[1],
+        summary: summaryMatch[1],
+      };
+    } else {
+      return Response.json(
+        { error: "Invalid response format" },
+        { status: 500 },
+      );
+    }
+    console.log("Original content:", content);
+  }
+
+  return Response.json(JSONContent);
 }
 
 export const runtime = "edge";

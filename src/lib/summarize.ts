@@ -61,14 +61,18 @@ export async function summarizeStream(chunks: Chunk[], language: string) {
           },
           body: JSON.stringify({ text, language }),
         });
-        const data = await response.json();
-
-        if (reading) {
-          controller.enqueue({
-            ...chunk,
-            summary: data.summary,
-            title: data.title,
-          });
+        let data;
+        try {
+          data = await response.json();
+          if (reading) {
+            controller.enqueue({
+              ...chunk,
+              summary: data.summary,
+              title: data.title,
+            });
+          }
+        } catch (e) {
+          console.log(e);
         }
       });
 
@@ -98,6 +102,10 @@ export async function generateQuickSummary(chunks: Chunk[], language: string) {
 
   const { title, summary } = await response.json();
 
+  console.log("title", title);
+  console.log("summary", summary);
+  console.log("title type", typeof title);
+  console.log("summary type", typeof summary);
   assert.ok(typeof title === "string");
   assert.ok(typeof summary === "string");
 
