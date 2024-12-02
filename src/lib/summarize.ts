@@ -9,6 +9,7 @@ export type Chunk = {
 
 export async function getPdfText(pdf: PDFDocumentProxy) {
   const numPages = pdf.numPages;
+
   let fullText = "";
 
   for (let pageNum = 1; pageNum <= numPages; pageNum++) {
@@ -31,7 +32,7 @@ export async function getPdfText(pdf: PDFDocumentProxy) {
 export async function chunkPdf(pdf: PDFDocumentProxy) {
   // const chunkCharSize = 6000; // 100k
   // const chunkCharSize = 100_000;
-  const maxChunkSize = 100_000;
+  const maxChunkSize = 50_000;
   // ideally have at least 4 chunks
   // chunk size = total chars / 4 OR 100k, whichever is smaller
 

@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 const font = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -34,7 +35,7 @@ export default function RootLayout({
         </header>
 
         <main className="grow">{children}</main>
-
+        <Toaster />
         <footer className="mx-auto mt-14 flex w-full max-w-7xl items-center justify-between px-4 py-6 md:mt-0">
           <p className="text-xs text-gray-300 md:text-sm">
             Powered by{" "}

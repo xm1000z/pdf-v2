@@ -1,6 +1,13 @@
 import assert from "assert";
 import dedent from "dedent";
 import Together from "together-ai";
+import { z } from "zod";
+import zodToJsonSchema from "zod-to-json-schema";
+// import { zodResponseFormat } from "openai/helpers/zod";
+
+// import OpenAI from "openai";
+
+// const openaiClient = new OpenAI();
 
 // Add observability if a Helicone key is specified, otherwise skip
 const options: ConstructorParameters<typeof Together>[0] = {};
@@ -28,8 +35,15 @@ export async function POST(req: Request) {
     - It's VERY important for my job that you ONLY respond with the JSON and nothing else.
   `;
 
+  const summarySchema = z.object({
+    title: z.string().describe("A title for the summary"),
+    summary: z.string().describe("The summary of the part of the PDF."),
+  });
+
   const response = await client.chat.completions.create({
-    model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+    // model: "ives/meta-llama-meta-llama-3--6c1af",
+    model: "gpt-4o-mini",
+    // model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
     messages: [
       {
         role: "system",
@@ -40,9 +54,17 @@ export async function POST(req: Request) {
         content: text,
       },
     ],
+    // response_format: zodResponseFormat(summarySchema, "summary"),
+    response_format: {
+      type: "json_object",
+      // @ts-expect-error sdk needs updating
+      schema: zodToJsonSchema(summarySchema),
+    },
   });
 
   const content = response.choices[0].message?.content;
+
+  console.log(response.usage);
 
   if (!content) {
     console.log("Content was blank");
