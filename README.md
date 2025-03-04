@@ -4,6 +4,7 @@
 
 - [ ] Use the new JSON mode endpoint & run some concurrency tests
 - [ ] Newlines for summaries (see if I can use Llama 3.1 70B or automatically add them with 8B)
+- [ ] Feedback from Youssef: Increase line spacing by 50%
 - [ ] Don't have a PDF? Try out this one out
 - [ ] Add OG image & metadata + analytics
 - [ ] Add new S3 bucket for Smart PDFs

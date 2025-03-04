@@ -61,15 +61,15 @@ export default function Home() {
 
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await getDocument({ data: arrayBuffer }).promise;
-    if (pdf.numPages > 500) {
-      toast({
-        variant: "destructive",
-        title: "PDF too large (500 pages max)",
-        description: "That PDF has too many pages. Please use a smaller PDF.",
-      });
-      setStatus("idle");
-      return;
-    }
+    // if (pdf.numPages > 500) {
+    //   toast({
+    //     variant: "destructive",
+    //     title: "PDF too large (500 pages max)",
+    //     description: "That PDF has too many pages. Please use a smaller PDF.",
+    //   });
+    //   setStatus("idle");
+    //   return;
+    // }
     const chunks = await chunkPdf(pdf);
 
     setChunks(chunks);

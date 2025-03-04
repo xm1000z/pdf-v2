@@ -7,19 +7,19 @@ import zodToJsonSchema from "zod-to-json-schema";
 
 // import OpenAI from "openai";
 
-// const openaiClient = new OpenAI();
+// const client = new OpenAI();
 
 // Add observability if a Helicone key is specified, otherwise skip
-const options: ConstructorParameters<typeof Together>[0] = {};
-if (process.env.HELICONE_API_KEY) {
-  options.baseURL = "https://together.helicone.ai/v1";
-  options.defaultHeaders = {
-    "Helicone-Auth": `Bearer ${process.env.HELICONE_API_KEY}`,
-    "Helicone-Property-AppName": "SmartPDF",
-  };
-}
+// const options: ConstructorParameters<typeof Together>[0] = {};
+// if (process.env.HELICONE_API_KEY) {
+//   options.baseURL = "https://together.helicone.ai/v1";
+//   options.defaultHeaders = {
+//     "Helicone-Auth": `Bearer ${process.env.HELICONE_API_KEY}`,
+//     "Helicone-Property-AppName": "SmartPDF",
+//   };
+// }
 
-const client = new Together(options);
+const client = new Together();
 
 export async function POST(req: Request) {
   const { text, language } = await req.json();
@@ -40,31 +40,36 @@ export async function POST(req: Request) {
     summary: z.string().describe("The summary of the part of the PDF."),
   });
 
-  const response = await client.chat.completions.create({
-    // model: "ives/meta-llama-meta-llama-3--6c1af",
-    model: "gpt-4o-mini",
-    // model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
+  const { data, response } = await client.chat.completions
+    .create({
+      model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo-p",
+      // model: "gpt-4o-mini",
+      // model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: text,
+        },
+      ],
+      // response_format: zodResponseFormat(summarySchema, "summary"),
+      response_format: {
+        type: "json_object",
+        // @ts-expect-error sdk needs updating
+        schema: zodToJsonSchema(summarySchema),
       },
-      {
-        role: "user",
-        content: text,
-      },
-    ],
-    // response_format: zodResponseFormat(summarySchema, "summary"),
-    response_format: {
-      type: "json_object",
-      // @ts-expect-error sdk needs updating
-      schema: zodToJsonSchema(summarySchema),
-    },
-  });
+    })
+    .withResponse();
 
-  const content = response.choices[0].message?.content;
+  const rayId = response.headers.get("cf-ray");
+  console.log("Ray ID:", rayId);
 
-  console.log(response.usage);
+  const content = data.choices[0].message?.content;
+
+  console.log(data.usage);
 
   if (!content) {
     console.log("Content was blank");
