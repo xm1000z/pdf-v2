@@ -43,7 +43,7 @@ export default function RootLayout({
               className="underline transition hover:text-gray-900"
               href="https://www.together.ai/"
             >
-              Together.ai
+              Together AI
             </Link>{" "}
             &{" "}
             <Link
