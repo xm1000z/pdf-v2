@@ -29,7 +29,7 @@ import { LinkIcon, MenuIcon, SquareArrowOutUpRight } from "lucide-react";
 import { sharePdf } from "@/app/actions";
 import ActionButton from "@/components/ui/action-button";
 import Link from "next/link";
-// import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const [status, setStatus] = useState<"idle" | "parsing" | "generating">(
@@ -49,7 +49,7 @@ export default function Home() {
   const [showMobileContents, setShowMobileContents] = useState(true);
   const { uploadToS3 } = useS3Upload();
 
-  // const { toast } = useToast();
+  const { toast } = useToast();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -61,15 +61,15 @@ export default function Home() {
 
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await getDocument({ data: arrayBuffer }).promise;
-    // if (pdf.numPages > 500) {
-    //   toast({
-    //     variant: "destructive",
-    //     title: "PDF too large (500 pages max)",
-    //     description: "That PDF has too many pages. Please use a smaller PDF.",
-    //   });
-    //   setStatus("idle");
-    //   return;
-    // }
+    if (pdf.numPages > 500) {
+      toast({
+        variant: "destructive",
+        title: "PDF too large (500 pages max)",
+        description: "That PDF has too many pages. Please use a smaller PDF.",
+      });
+      setStatus("idle");
+      return;
+    }
     const chunks = await chunkPdf(pdf);
 
     setChunks(chunks);
