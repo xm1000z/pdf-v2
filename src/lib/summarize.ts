@@ -9,21 +9,35 @@ export type Chunk = {
 
 export async function getPdfText(pdf: PDFDocumentProxy) {
   const numPages = pdf.numPages;
-
   let fullText = "";
 
   for (let pageNum = 1; pageNum <= numPages; pageNum++) {
-    const page = await pdf.getPage(pageNum); // Get page
-    const textContent = await page.getTextContent(); // Extract text content
+    const page = await pdf.getPage(pageNum);
+    const textContent = await page.getTextContent();
 
-    // Concatenate text from all items on the page
-    const pageText = textContent.items
-      .map((item) => {
-        return "str" in item ? item.str : "";
-      })
-      .join(" ");
+    let lastY = null;
+    let pageText = "";
 
-    fullText += pageText + "\n"; // Add page text to full text
+    // Process each text item
+    for (const item of textContent.items) {
+      if ("str" in item) {
+        // Check for new line based on Y position
+        if (lastY !== null && lastY !== item.transform[5]) {
+          pageText += "\n";
+
+          // Add extra line break if there's significant vertical space
+          if (lastY - item.transform[5] > 12) {
+            // Adjust this threshold as needed
+            pageText += "\n";
+          }
+        }
+
+        pageText += item.str;
+        lastY = item.transform[5];
+      }
+    }
+
+    fullText += pageText + "\n\n"; // Add double newline between pages
   }
 
   return fullText;

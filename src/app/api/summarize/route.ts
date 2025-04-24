@@ -11,22 +11,35 @@ export async function POST(req: Request) {
   assert.ok(typeof language === "string");
 
   const systemPrompt = dedent`
-    You are an expert at summarizing text. I am going to send you a part of a document and I want you to concisely summarize it for me in a few paragraphs. I also want you to generate a short title for the summary, all in ${language}.
+    You are an expert at summarizing text.
 
-    Think carefully step by step and make sure to cover all the important points of the document in the summary.
+    Your task:
+    1. Read the document excerpt I will provide
+    2. Create a concise summary in ${language}
+    3. Generate a short, descriptive title in ${language}
+
+    Guidelines for the summary:
+    - Break down the summary into short, focused paragraphs (2-3 sentences each)
+    - Use bullet points for listing key facts or points
+    - Include line breaks between paragraphs for better readability
+    
+    The summary should be well-structured and easy to scan, while maintaining accuracy and completeness.
+    Please analyze the text thoroughly before starting the summary.
   `;
-
-  // - Only answer with the title and summary in JSON. {title: string, summary: string}
-  //   - It's VERY important for my job that you ONLY respond with the JSON and nothing else.
 
   const summarySchema = z.object({
     title: z.string().describe("A title for the summary"),
-    summary: z.string().describe("The actual summary of the text."),
+    summary: z
+      .string()
+      .describe(
+        "The actual summary of the text containing new lines breaks between paragraphs or phrases for better readability.",
+      ),
   });
 
   const summaryResponse = await generateObject({
     model: togetheraiClient("meta-llama/Llama-3.3-70B-Instruct-Turbo"),
     schema: summarySchema,
+    maxRetries: 2,
     messages: [
       {
         role: "system",
