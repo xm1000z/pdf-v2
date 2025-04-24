@@ -118,7 +118,6 @@ export async function generateQuickSummary(chunks: Chunk[], language: string) {
   const { title, summary } = await response.json();
 
   console.log("title", title);
-  console.log("summary", summary);
   assert.ok(typeof title === "string");
   assert.ok(typeof summary === "string");
 
