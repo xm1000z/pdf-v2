@@ -30,11 +30,12 @@ import { sharePdf } from "@/app/actions";
 import ActionButton from "@/components/ui/action-button";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
+import { HomeLandingDrop } from "@/components/HomeLandingDrop";
+
+export type StatusApp = "idle" | "parsing" | "generating";
 
 export default function Home() {
-  const [status, setStatus] = useState<"idle" | "parsing" | "generating">(
-    "idle",
-  );
+  const [status, setStatus] = useState<StatusApp>("idle");
   const [file, setFile] = useState<File>();
   const [fileUrl, setFileUrl] = useState("");
   const [chunks, setChunks] = useState<Chunk[]>([]);
@@ -107,6 +108,7 @@ export default function Home() {
     if (!file || !quickSummary || !image) return;
 
     const uploadedPdf = await uploadToS3(file);
+    setFileUrl(uploadedPdf.url);
     const uploadedImage = await uploadToS3(
       base64ToFile(image, "image.png", "image/png"),
     );
@@ -135,126 +137,45 @@ export default function Home() {
   return (
     <div>
       {status === "idle" || status === "parsing" ? (
-        <div className="mx-auto mt-6 max-w-lg md:mt-10">
-          <h1 className="text-center text-4xl font-bold md:text-5xl">
-            Summarize PDFs
-            <br /> in seconds
-          </h1>
-          <p className="mx-auto mt-6 max-w-md text-balance text-center leading-snug md:text-lg md:leading-snug">
-            Upload a <strong>PDF</strong> to get a quick, clear, and shareable
-            summary.
-          </p>
-
-          <form
-            onSubmit={handleSubmit}
-            className="relative mx-auto mt-20 max-w-md px-4 md:mt-16"
-          >
-            <div className="pointer-events-none absolute left-[-40px] top-[-185px] flex w-[200px] items-center md:-left-[calc(min(30vw,350px))] md:-top-20 md:w-[390px]">
-              <HomepageImage1 />
-            </div>
-            <div className="pointer-events-none absolute right-[20px] top-[-110px] flex w-[70px] justify-center md:-right-[calc(min(30vw,350px))] md:-top-5 md:w-[390px]">
-              <HomepageImage2 />
-            </div>
-
-            <div className="relative">
-              <div className="flex flex-col rounded-xl bg-white px-6 py-6 shadow md:px-12 md:py-8">
-                <label className="text-gray-500" htmlFor="file">
-                  Upload PDF
-                </label>
-                <Dropzone
-                  multiple={false}
-                  accept={{
-                    "application/pdf": [".pdf"],
-                  }}
-                  onDrop={(acceptedFiles) => {
-                    const fileUrl = URL.createObjectURL(acceptedFiles[0]);
-                    setFile(acceptedFiles[0]);
-                    setFileUrl(fileUrl);
-                  }}
-                >
-                  {({ getRootProps, getInputProps, isDragAccept }) => (
-                    <div
-                      className={`mt-2 flex aspect-video cursor-pointer items-center justify-center rounded-lg border border-dashed bg-gray-100 ${isDragAccept ? "border-blue-500" : "border-gray-250"}`}
-                      {...getRootProps()}
-                    >
-                      <input required={!file} {...getInputProps()} />
-                      <div className="text-center">
-                        {file ? (
-                          <p>{file.name}</p>
-                        ) : (
-                          <Button type="button" className="md:text-base">
-                            Select PDF
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </Dropzone>
-                <label className="mt-8 text-gray-500" htmlFor="language">
-                  Language
-                </label>
-                <Select defaultValue="english" name="language">
-                  <SelectTrigger className="mt-2 bg-gray-100" id="language">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[
-                      { label: "English", value: "english" },
-                      { label: "German", value: "german" },
-                      { label: "French", value: "french" },
-                      { label: "Italian", value: "italian" },
-                      { label: "Portuguese", value: "portuguese" },
-                      { label: "Hindi", value: "hindi" },
-                      { label: "Spanish", value: "spanish" },
-                      { label: "Thai", value: "thai" },
-                    ].map((language) => (
-                      <SelectItem key={language.value} value={language.value}>
-                        {language.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="mt-8 text-center">
-                <Button
-                  type="submit"
-                  variant="secondary"
-                  className="w-60 border bg-white/80 text-base font-semibold hover:bg-white md:w-auto"
-                  disabled={status === "parsing"}
-                >
-                  <SparklesIcon />
-                  Generate
-                </Button>
-              </div>
-            </div>
-          </form>
-        </div>
+        <HomeLandingDrop
+          status={status}
+          file={file}
+          setFile={(file) => file && setFile(file)}
+          handleSubmit={handleSubmit}
+        />
       ) : (
         <div className="mt-6 px-4 md:mt-10">
           <div className="mx-auto max-w-3xl">
             <div className="flex items-center justify-between rounded-lg border border-gray-250 px-4 py-2 md:px-6 md:py-3">
               <div className="inline-flex items-center gap-4">
                 <p className="md:text-lg">{file?.name}</p>
-                <Link href={fileUrl} target="_blank">
-                  <SquareArrowOutUpRight size={14} />
-                </Link>
               </div>
 
-              <form action={shareAction}>
-                <fieldset disabled={!quickSummary}>
-                  <div className="md:hidden">
-                    <ActionButton type="submit" size="icon">
-                      <LinkIcon />
+              <div className="flex flex-row gap-2">
+                {fileUrl && (
+                  <Link href={fileUrl} target="_blank">
+                    <ActionButton>
+                      <SquareArrowOutUpRight size={14} />
+                      <span>Original PDF</span>
                     </ActionButton>
-                  </div>
-                  <div className="hidden md:block">
-                    <ActionButton type="submit">
-                      <LinkIcon />
-                      <span>Share</span>
-                    </ActionButton>
-                  </div>
-                </fieldset>
-              </form>
+                  </Link>
+                )}
+                <form action={shareAction}>
+                  <fieldset disabled={!quickSummary}>
+                    <div className="md:hidden">
+                      <ActionButton type="submit" size="icon">
+                        <LinkIcon />
+                      </ActionButton>
+                    </div>
+                    <div className="hidden md:block">
+                      <ActionButton type="submit">
+                        <LinkIcon />
+                        <span>Share Summary</span>
+                      </ActionButton>
+                    </div>
+                  </fieldset>
+                </form>
+              </div>
             </div>
 
             <div className="mt-8 rounded-lg bg-gray-200 px-4 py-2 shadow md:hidden">
@@ -293,11 +214,11 @@ export default function Home() {
                       />
                     )}
                     <hr className="-mx-5 my-8" />
-                    <h2 className="font-semibold text-gray-900">
+                    <h2 className="text-xl font-semibold text-gray-900">
                       {quickSummary?.title}
                     </h2>
                     <div
-                      className="prose prose mt-4 text-sm"
+                      className="prose mt-4 text-sm"
                       dangerouslySetInnerHTML={{
                         __html: quickSummary?.summary || "",
                       }}
@@ -305,7 +226,7 @@ export default function Home() {
                   </div>
                 ) : activeChunkIndex !== null ? (
                   <div>
-                    <h2 className="font-semibold text-gray-900">
+                    <h2 className="text-xl font-semibold text-gray-900">
                       {chunks[activeChunkIndex].title}
                     </h2>
                     <div
