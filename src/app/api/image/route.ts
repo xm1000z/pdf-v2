@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     steps: 5,
     width: 1280,
     height: 720,
-    // @ts-expect-error - this is not typed in the API
+    // @ts-ignore
     response_format: "base64",
   });
 

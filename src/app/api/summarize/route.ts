@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       max_tokens: 800,
       response_format: {
         type: "json_schema",
-        // @ts-expect-error sdk needs updating
+        // @ts-ignore
         schema: zodToJsonSchema(summarySchema),
       },
     })
