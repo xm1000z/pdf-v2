@@ -119,8 +119,6 @@ export async function generateQuickSummary(chunks: Chunk[], language: string) {
 
   console.log("title", title);
   console.log("summary", summary);
-  console.log("title type", typeof title);
-  console.log("summary type", typeof summary);
   assert.ok(typeof title === "string");
   assert.ok(typeof summary === "string");
 
