@@ -19,12 +19,16 @@ export async function POST(req: Request) {
     3. Generate a short, descriptive title in ${language}
 
     Guidelines for the summary:
-    - Break down the summary into short, focused paragraphs (2-3 sentences each)
-    - Use bullet points for listing key facts or points
-    - Include line breaks between paragraphs for better readability
+    - Format the summary in HTML
+    - Use <p> tags for paragraphs (2-3 sentences each)
+    - Use <ul> and <li> tags for bullet points
+    - Use <h3> tags for subheadings when needed
+    - Ensure proper spacing with appropriate HTML tags
     
     The summary should be well-structured and easy to scan, while maintaining accuracy and completeness.
     Please analyze the text thoroughly before starting the summary.
+    
+    IMPORTANT: Output ONLY valid HTML without any markdown or plain text line breaks.
   `;
 
   const summarySchema = z.object({
