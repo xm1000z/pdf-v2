@@ -14,8 +14,9 @@ const font = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Smart PDFs",
-  description: "Summarize PDFs in seconds",
+  title: "Smart PDFs | Summarize PDFs in seconds",
+  description:
+    "Upload a PDF to get a quick, clear, and shareable summary with AI for free!",
 };
 
 export default function RootLayout({
@@ -39,36 +40,44 @@ export default function RootLayout({
         <footer className="mx-auto mt-14 flex w-full max-w-7xl items-center justify-between px-4 py-6 md:mt-0">
           <p className="text-xs text-gray-300 md:text-sm">
             Powered by{" "}
-            <Link
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
               className="underline transition hover:text-gray-900"
-              href="https://www.together.ai/"
+              href="https://togetherai.link/"
             >
               Together AI
-            </Link>{" "}
+            </a>{" "}
             &{" "}
-            <Link
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
               className="underline transition hover:text-gray-900"
               href="https://www.together.ai/blog/flux-api-is-now-available-on-together-ai-new-pro-free-access-to-flux-schnell"
             >
               Flux
-            </Link>
+            </a>
           </p>
 
           <div className="flex items-center gap-2 md:gap-3">
-            <Link
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-1 rounded-lg border border-gray-250 bg-white px-2 py-1.5 text-xs text-gray-300 shadow transition hover:bg-white/75 md:rounded-xl md:px-4 md:text-sm"
-              href="#"
+              href="https://github.com/nutlope/smartpdfs"
             >
               <GithubIcon className="size-4" />
               GitHub
-            </Link>
-            <Link
-              href="#"
+            </a>
+            <a
+              href="https://x.com/nutlope"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-1 rounded-lg border border-gray-250 bg-white px-2 py-1.5 text-xs text-gray-300 shadow transition hover:bg-white/75 md:rounded-xl md:px-4 md:text-sm"
             >
               <XIcon className="size-3" />
               Twitter
-            </Link>
+            </a>
           </div>
         </footer>
       </body>
