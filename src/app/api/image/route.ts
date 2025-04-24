@@ -1,7 +1,6 @@
 import dedent from "dedent";
-import Together from "together-ai";
-
-const client = new Together();
+import { experimental_generateImage as generateImage } from "ai";
+import { togetheraiClient } from "@/lib/ai";
 
 export async function POST(req: Request) {
   const json = await req.json();
@@ -17,17 +16,18 @@ export async function POST(req: Request) {
     ${text}
   `;
 
-  const response = await client.images.create({
-    model: "black-forest-labs/FLUX.1-schnell",
-    prompt,
-    steps: 5,
-    width: 1280,
-    height: 720,
-    // @ts-ignore
-    response_format: "base64",
+  const { images } = await generateImage({
+    model: togetheraiClient.image("black-forest-labs/FLUX.1-dev"),
+    prompt: prompt,
+    providerOptions: {
+      togetherai: {
+        steps: 5,
+      },
+    },
+    size: "1280x720",
   });
 
-  const image = response.data[0].b64_json;
+  const image = images[0].base64;
   const payload = {
     image,
   };
