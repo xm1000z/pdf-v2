@@ -2,9 +2,9 @@
 
 ## TODOs
 
-- [ ] Fix issue in prod: Failed to fetch RSC payload for blob:
-- [ ] Add newlines for summaries (try to add them automatically every 5 sentences)
-- [ ] Feedback from Youssef: Increase line spacing by 50%
+- [x] Fix issue in prod: Failed to fetch RSC payload for blob:
+- [x] Add newlines for summaries (try to add them automatically every 5 sentences)
+- [x] Feedback from Youssef: Increase line spacing by 50%
 - [ ] Show a toast when PDF is shared + copy the link to the clipboard
 - [ ] Make PDF sharing be faster & not refresh the page
 - [ ] Add OG image & metadata
