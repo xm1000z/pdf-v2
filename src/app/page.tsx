@@ -83,10 +83,10 @@ export default function Home() {
     await stream.pipeTo(writeStream, { signal: controller.signal });
 
     const quickSummary = await generateQuickSummary(summarizedChunks, language);
-    const image = await generateImage(quickSummary.summary);
+    const imageUrl = await generateImage(quickSummary.summary);
 
     setQuickSummary(quickSummary);
-    setImage(`data:image/png;base64,${image}`);
+    setImage(imageUrl);
 
     setActiveChunkIndex((activeChunkIndex) =>
       activeChunkIndex === null ? "quick-summary" : activeChunkIndex,
@@ -98,14 +98,11 @@ export default function Home() {
 
     const uploadedPdf = await uploadToS3(file);
     setFileUrl(uploadedPdf.url);
-    const uploadedImage = await uploadToS3(
-      base64ToFile(image, "image.png", "image/png"),
-    );
 
     await sharePdf({
       pdfName: file.name,
       pdfUrl: uploadedPdf.url,
-      imageUrl: uploadedImage.url,
+      imageUrl: image,
       sections: [
         {
           type: "quick-summary",
@@ -195,7 +192,7 @@ export default function Home() {
                   <SummaryContent
                     title={quickSummary?.title}
                     summary={quickSummary?.summary}
-                    image={image}
+                    imageUrl={image}
                   />
                 ) : activeChunkIndex !== null ? (
                   <SummaryContent
@@ -223,32 +220,4 @@ export default function Home() {
       )}
     </div>
   );
-}
-
-function base64ToFile(
-  base64String: string,
-  fileName: string,
-  mimeType: string,
-): File {
-  // Ensure the Base64 string has the correct format
-  if (!base64String.startsWith("data:")) {
-    throw new Error(
-      "Invalid Base64 string format. It must include the data URI scheme (e.g., data:image/png;base64,...)",
-    );
-  }
-
-  // Decode the Base64 string
-  const byteString = atob(base64String.split(",")[1]);
-
-  // Create a typed array from the binary string
-  const byteArray = new Uint8Array(byteString.length);
-  for (let i = 0; i < byteString.length; i++) {
-    byteArray[i] = byteString.charCodeAt(i);
-  }
-
-  // Create a Blob from the typed array
-  const blob = new Blob([byteArray], { type: mimeType });
-
-  // Create and return the File object
-  return new File([blob], fileName, { type: mimeType });
 }

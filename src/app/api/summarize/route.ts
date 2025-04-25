@@ -54,7 +54,7 @@ export async function POST(req: Request) {
         content: text,
       },
     ],
-    maxTokens: 800,
+    // maxTokens: 800,
   });
 
   const rayId = summaryResponse.response?.headers?.["cf-ray"];

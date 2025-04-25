@@ -5,21 +5,21 @@ import Image from "next/image";
 interface SummaryContentProps {
   title?: string;
   summary?: string;
-  image?: string;
+  imageUrl?: string;
 }
 
 export default function SummaryContent({
   title,
   summary,
-  image,
+  imageUrl,
 }: SummaryContentProps) {
   return (
     <div>
-      {image && (
+      {imageUrl && (
         <>
           <Image
             className="rounded-md"
-            src={image}
+            src={imageUrl}
             width={1280}
             height={720}
             alt=""

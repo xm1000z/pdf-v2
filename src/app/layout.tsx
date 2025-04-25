@@ -3,7 +3,6 @@ import XIcon from "@/components/icons/x";
 import Logo from "@/components/ui/logo";
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import Link from "next/link";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -30,12 +29,12 @@ export default function RootLayout({
         className={`${font.variable} flex min-h-full flex-col bg-gray-100 font-[family-name:var(--font-plus-jakarta-sans)] text-gray-900 antialiased`}
       >
         <header className="py-6 text-center">
-          <Link href="/" replace={true} className="inline-flex justify-center">
+          <a href="/" className="inline-flex justify-center">
             <Logo />
-          </Link>
+          </a>
         </header>
 
-        <main className="grow">{children}</main>
+        <main className="grow overflow-hidden">{children}</main>
         <Toaster />
         <footer className="mx-auto mt-14 flex w-full max-w-7xl items-center justify-between px-4 py-6 md:mt-0">
           <p className="text-xs text-gray-300 md:text-sm">

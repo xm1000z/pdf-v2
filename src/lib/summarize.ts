@@ -124,6 +124,10 @@ export async function generateQuickSummary(chunks: Chunk[], language: string) {
   return { title, summary };
 }
 
+export type ImageGenerationResponse = {
+  url: string;
+};
+
 export async function generateImage(summary: string) {
   const response = await fetch("/api/image", {
     method: "POST",
@@ -133,8 +137,7 @@ export async function generateImage(summary: string) {
     body: JSON.stringify({ text: summary }),
   });
 
-  const data = await response.json();
-  const image = data.image;
+  const data: ImageGenerationResponse = await response.json();
 
-  return typeof image === "string" ? image : null;
+  return data.url;
 }

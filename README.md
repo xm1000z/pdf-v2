@@ -1,5 +1,9 @@
 # SmartPDF
 
+1. refactor saving to db to immediate / pdf/custom-slug
+2. testing different models for summary and for image
+3. og image plus toast
+
 ## TODOs
 
 - [x] Fix issue in prod: Failed to fetch RSC payload for blob:
