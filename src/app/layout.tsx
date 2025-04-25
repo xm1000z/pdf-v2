@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   title: "Smart PDFs | Summarize PDFs in seconds",
   description:
     "Upload a PDF to get a quick, clear, and shareable summary with AI for free!",
+  openGraph: {
+    images: "https://smartpdfs.vercel.app/og.jpg",
+  },
 };
 
 export default function RootLayout({
