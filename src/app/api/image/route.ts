@@ -1,6 +1,6 @@
 import dedent from "dedent";
-import { experimental_generateImage as generateImage } from "ai";
-import { togetheraiClient } from "@/lib/ai";
+import { togetheraiBaseClient } from "@/lib/ai";
+import { ImageGenerationResponse } from "@/lib/summarize";
 
 export async function POST(req: Request) {
   const json = await req.json();
@@ -16,27 +16,17 @@ export async function POST(req: Request) {
     ${text}
   `;
 
-  const { images } = await generateImage({
-    model: togetheraiClient.image("black-forest-labs/FLUX.1-dev"),
+  const generatedImage = await togetheraiBaseClient.images.create({
+    model: "black-forest-labs/FLUX.1-dev",
+    width: 1280,
+    height: 720,
+    steps: 24,
     prompt: prompt,
-    providerOptions: {
-      togetherai: {
-        steps: 5,
-      },
-    },
-    size: "1280x720",
   });
 
-  const image = images[0].base64;
-  const payload = {
-    image,
-  };
-
-  return new Response(JSON.stringify(payload), {
-    headers: {
-      "content-type": "application/json",
-    },
-  });
+  return Response.json({
+    url: generatedImage.data[0].url,
+  } as ImageGenerationResponse);
 }
 
 export const runtime = "edge";

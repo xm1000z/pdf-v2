@@ -5,9 +5,9 @@
 - [x] Fix issue in prod: Failed to fetch RSC payload for blob:
 - [x] Add newlines for summaries (try to add them automatically every 5 sentences)
 - [x] Feedback from Youssef: Increase line spacing by 50%
-- [ ] Show a toast when PDF is shared + copy the link to the clipboard
-- [ ] Make PDF sharing be faster & not refresh the page
-- [ ] Add OG image & metadata
+- [x] Show a toast when PDF is shared + copy the link to the clipboard
+- [x] Make PDF sharing be faster & not refresh the page
+- [x] Add OG image & metadata
 - [x] Update links throughout app to be dub links for tracking
 - [ ] Prep README for launch similar to other apps
 
