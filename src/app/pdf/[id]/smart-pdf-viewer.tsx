@@ -2,22 +2,33 @@
 
 import { Button } from "@/components/ui/button";
 import { Section, SmartPDF } from "@prisma/client";
-import { MenuIcon, SquareArrowOutUpRight } from "lucide-react";
+import { LinkIcon, MenuIcon, SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import TableOfContents from "@/components/ui/table-of-contents";
 import SummaryContent from "@/components/ui/summary-content";
 import ActionButton from "@/components/ui/action-button";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SmartPDFViewer({
   smartPdf,
 }: {
   smartPdf: SmartPDF & { sections: Section[] };
 }) {
+  const { toast } = useToast();
   const [showMobileContents, setShowMobileContents] = useState(true);
   const [activeSection, setActiveSection] = useState<number | "quick-summary">(
     "quick-summary",
   );
+
+  const handleShare = () => {
+    toast({
+      title: "Share Summary 🔗",
+      description:
+        "A link to your summary has been copied to your clipboard ✨",
+    });
+    navigator.clipboard.writeText(window.location.href);
+  };
 
   const quickSummary = smartPdf.sections[0];
   const pdfSections = smartPdf.sections.slice(1);
@@ -27,12 +38,25 @@ export default function SmartPDFViewer({
       <div className="mx-auto max-w-3xl">
         <div className="flex flex-col items-center justify-between gap-4 rounded-lg border border-gray-250 px-4 py-2 text-center sm:flex-row md:px-6 md:py-3">
           <p className="md:text-lg md:leading-9">{smartPdf.pdfName}</p>
-          <Link href={smartPdf.pdfUrl} target="_blank">
-            <ActionButton>
-              <SquareArrowOutUpRight size={14} />
-              <span>Original PDF</span>
-            </ActionButton>
-          </Link>
+          <div className="flex flex-row gap-2">
+            <Link href={smartPdf.pdfUrl} target="_blank">
+              <ActionButton>
+                <SquareArrowOutUpRight size={14} />
+                <span>Original PDF</span>
+              </ActionButton>
+            </Link>
+            <div className="md:hidden">
+              <ActionButton onClick={handleShare} size="icon">
+                <LinkIcon />
+              </ActionButton>
+            </div>
+            <div className="hidden md:block" onClick={handleShare}>
+              <ActionButton type="submit">
+                <LinkIcon />
+                <span>Share Summary</span>
+              </ActionButton>
+            </div>
+          </div>
         </div>
 
         <div className="mt-8 rounded-lg bg-gray-200 px-4 py-2 shadow md:hidden">

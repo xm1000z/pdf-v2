@@ -49,6 +49,8 @@ export default function Home() {
 
     setStatus("parsing");
 
+    const uploadedPdfPromise = uploadToS3(file);
+
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await getDocument({ data: arrayBuffer }).promise;
     if (pdf.numPages > 500) {
@@ -60,9 +62,9 @@ export default function Home() {
       setStatus("idle");
       return;
     }
-    const chunks = await chunkPdf(pdf);
+    const localChunks = await chunkPdf(pdf);
 
-    setChunks(chunks);
+    setChunks(localChunks);
     setStatus("generating");
 
     const summarizedChunks: Chunk[] = [];
@@ -78,7 +80,7 @@ export default function Home() {
       },
     });
 
-    const stream = await summarizeStream(chunks, language);
+    const stream = await summarizeStream(localChunks, language);
     const controller = new AbortController();
     await stream.pipeTo(writeStream, { signal: controller.signal });
 
@@ -88,21 +90,17 @@ export default function Home() {
     setQuickSummary(quickSummary);
     setImage(imageUrl);
 
+    const uploadedPdf = await uploadedPdfPromise;
+    setFileUrl(uploadedPdf.url);
+
     setActiveChunkIndex((activeChunkIndex) =>
       activeChunkIndex === null ? "quick-summary" : activeChunkIndex,
     );
-  }
-
-  async function shareAction() {
-    if (!file || !quickSummary || !image) return;
-
-    const uploadedPdf = await uploadToS3(file);
-    setFileUrl(uploadedPdf.url);
 
     await sharePdf({
       pdfName: file.name,
       pdfUrl: uploadedPdf.url,
-      imageUrl: image,
+      imageUrl: imageUrl,
       sections: [
         {
           type: "quick-summary",
@@ -110,7 +108,7 @@ export default function Home() {
           summary: quickSummary.summary,
           position: 0,
         },
-        ...chunks.map((chunk, index) => ({
+        ...summarizedChunks.map((chunk, index) => ({
           type: "summary",
           title: chunk?.title ?? "",
           summary: chunk?.summary ?? "",
@@ -146,21 +144,6 @@ export default function Home() {
                     </ActionButton>
                   </Link>
                 )}
-                <form action={shareAction}>
-                  <fieldset disabled={!quickSummary}>
-                    <div className="md:hidden">
-                      <ActionButton type="submit" size="icon">
-                        <LinkIcon />
-                      </ActionButton>
-                    </div>
-                    <div className="hidden md:block">
-                      <ActionButton type="submit">
-                        <LinkIcon />
-                        <span>Share Summary</span>
-                      </ActionButton>
-                    </div>
-                  </fieldset>
-                </form>
               </div>
             </div>
 
