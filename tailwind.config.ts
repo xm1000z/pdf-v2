@@ -1,9 +1,5 @@
 import type { Config } from "tailwindcss";
-import colors from "tailwindcss/colors";
 import tailwindcssAnimate from "tailwindcss-animate";
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { gray, ...rest } = colors;
 
 export default {
   darkMode: ["class"],
@@ -13,17 +9,6 @@ export default {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    colors: {
-      ...rest,
-      gray: {
-        "100": "#F4F1EC",
-        "200": "#FAF8F5",
-        "250": "#E1E1E1",
-        "300": "#B7B7B7",
-        "500": "#9A9A9A",
-        "900": "#3F3C3C",
-      },
-    },
     extend: {
       borderRadius: {
         lg: "var(--radius)",
@@ -31,6 +16,14 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        gray: {
+          "100": "#F4F1EC",
+          "200": "#FAF8F5",
+          "250": "#E1E1E1",
+          "300": "#B7B7B7",
+          "500": "#9A9A9A",
+          "900": "#3F3C3C",
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
