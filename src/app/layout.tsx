@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import Link from "next/link";
 
 const font = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -29,9 +30,9 @@ export default function RootLayout({
         className={`${font.variable} flex min-h-full flex-col bg-gray-100 font-[family-name:var(--font-plus-jakarta-sans)] text-gray-900 antialiased`}
       >
         <header className="py-6 text-center">
-          <a href="/" className="inline-flex justify-center">
+          <Link href="/" className="inline-flex justify-center">
             <Logo />
-          </a>
+          </Link>
         </header>
 
         <main className="grow overflow-hidden">{children}</main>

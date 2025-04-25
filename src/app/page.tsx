@@ -12,7 +12,7 @@ import {
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { FormEvent, useState } from "react";
 import "pdfjs-dist/legacy/build/pdf.worker.mjs";
-import { LinkIcon, MenuIcon, SquareArrowOutUpRight } from "lucide-react";
+import { MenuIcon, SquareArrowOutUpRight } from "lucide-react";
 import { sharePdf } from "@/app/actions";
 import ActionButton from "@/components/ui/action-button";
 import Link from "next/link";
