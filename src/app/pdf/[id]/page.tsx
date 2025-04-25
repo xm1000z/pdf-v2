@@ -33,7 +33,7 @@ export async function generateMetadata(
   if (!smartPdf) notFound();
 
   return {
-    title: `${smartPdf.sections[0].title.slice(0, 60)} | ${parentData.title}`,
+    title: `${smartPdf.sections[0].title.slice(0, 60)} | ${parentData.title?.absolute}`,
     description: smartPdf.sections[0].summary.slice(0, 160),
     openGraph: {
       images: [smartPdf.imageUrl],
