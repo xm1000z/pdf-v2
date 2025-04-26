@@ -62,7 +62,24 @@ export default function Home() {
       setStatus("idle");
       return;
     }
+
     const localChunks = await chunkPdf(pdf);
+    const totalText = localChunks.reduce(
+      (acc, chunk) => acc + chunk.text.length,
+      0,
+    );
+
+    if (totalText < 500) {
+      toast({
+        variant: "destructive",
+        title: "Unable to process PDF",
+        description:
+          "The PDF appears to be a scanned document or contains too little text to process. Please ensure the PDF contains searchable text.",
+      });
+      setFile(undefined);
+      setStatus("idle");
+      return;
+    }
 
     setChunks(localChunks);
     setStatus("generating");
