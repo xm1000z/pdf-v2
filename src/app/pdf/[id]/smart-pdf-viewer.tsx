@@ -23,9 +23,9 @@ export default function SmartPDFViewer({
 
   const handleShare = () => {
     toast({
-      title: "Share Summary 🔗",
+      title: "Copied to Clipboard 📋",
       description:
-        "A link to your summary has been copied to your clipboard ✨",
+        "Share link has been copied. Ready to share your PDF summary! 🔗",
     });
     navigator.clipboard.writeText(window.location.href);
   };
