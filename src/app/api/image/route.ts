@@ -1,6 +1,8 @@
 import dedent from "dedent";
 import { togetheraiBaseClient } from "@/lib/ai";
 import { ImageGenerationResponse } from "@/lib/summarize";
+import { awsS3Client } from "@/lib/s3client";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 export async function POST(req: Request) {
   const json = await req.json();
@@ -23,9 +25,33 @@ export async function POST(req: Request) {
     steps: 24,
     prompt: prompt,
   });
+  const fluxImageUrl = generatedImage.data[0].url;
+
+  if (!fluxImageUrl) throw new Error("No image URL from Flux");
+
+  const fluxFetch = await fetch(fluxImageUrl);
+  const fluxImage = await fluxFetch.blob();
+  const imageBuffer = Buffer.from(await fluxImage.arrayBuffer());
+
+  const coverImageKey = `pdf-cover-${generatedImage.id}.jpg`;
+
+  const uploadedFile = await awsS3Client.send(
+    new PutObjectCommand({
+      Bucket: process.env.S3_UPLOAD_BUCKET || "",
+      Key: coverImageKey,
+      Body: imageBuffer,
+      ContentType: "image/jpeg",
+    }),
+  );
+
+  if (!uploadedFile) {
+    throw new Error("Failed to upload enhanced image to S3");
+  }
 
   return Response.json({
-    url: generatedImage.data[0].url,
+    url: `https://${process.env.S3_UPLOAD_BUCKET}.s3.${
+      process.env.S3_UPLOAD_REGION || "us-east-1"
+    }.amazonaws.com/${coverImageKey}`,
   } as ImageGenerationResponse);
 }
 
