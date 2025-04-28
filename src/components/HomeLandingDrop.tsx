@@ -13,6 +13,7 @@ import Dropzone from "react-dropzone";
 import HomepageImage1 from "./images/homepage-image-1";
 import HomepageImage2 from "./images/homepage-image-2";
 import { StatusApp } from "@/app/page";
+import { toast, useToast } from "@/hooks/use-toast";
 
 export const HomeLandingDrop = ({
   status,
@@ -25,6 +26,7 @@ export const HomeLandingDrop = ({
   setFile: (file: File | null) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }) => {
+  const { toast } = useToast();
   return (
     <div className="mx-auto mt-6 max-w-lg md:mt-10">
       <h1 className="text-center text-4xl font-bold md:text-5xl">
@@ -58,7 +60,16 @@ export const HomeLandingDrop = ({
                 "application/pdf": [".pdf"],
               }}
               onDrop={(acceptedFiles) => {
-                setFile(acceptedFiles[0]);
+                const file = acceptedFiles[0];
+                if (file.size > 15 * 1024 * 1024) {
+                  // 10MB in bytes
+                  toast({
+                    title: "📁 File Too Large",
+                    description: "⚠️ File size must be less than 15MB",
+                  });
+                  return;
+                }
+                setFile(file);
               }}
             >
               {({ getRootProps, getInputProps, isDragAccept }) => (

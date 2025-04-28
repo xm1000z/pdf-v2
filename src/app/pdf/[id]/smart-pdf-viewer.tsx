@@ -37,7 +37,9 @@ export default function SmartPDFViewer({
     <div className="mt-6 px-4 md:mt-10">
       <div className="mx-auto max-w-3xl">
         <div className="flex flex-col items-center justify-between gap-4 rounded-lg border border-gray-250 px-4 py-2 text-center sm:flex-row md:px-6 md:py-3">
-          <p className="md:text-lg md:leading-9">{smartPdf.pdfName}</p>
+          <p className="w-[-webkit-fill-available] max-w-96 truncate md:text-lg md:leading-9">
+            {smartPdf.pdfName}
+          </p>
           <div className="flex flex-row gap-2">
             <Link href={smartPdf.pdfUrl} target="_blank">
               <ActionButton>
