@@ -13,7 +13,7 @@ import Dropzone from "react-dropzone";
 import HomepageImage1 from "./images/homepage-image-1";
 import HomepageImage2 from "./images/homepage-image-2";
 import { StatusApp } from "@/app/page";
-import { toast, useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export const HomeLandingDrop = ({
   status,
