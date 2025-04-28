@@ -8,6 +8,8 @@ export async function POST(req: Request) {
   const json = await req.json();
   const text = "text" in json ? json.text : "";
 
+  const start = new Date();
+
   const prompt = dedent`
     I'm going to give you a short summary of what is in a PDF. I need you to create an image that captures the essence of the content.
     
@@ -25,6 +27,12 @@ export async function POST(req: Request) {
     steps: 24,
     prompt: prompt,
   });
+
+  const end = new Date();
+  console.log(
+    `Flux took ${end.getTime() - start.getTime()}ms to generate an image`,
+  );
+
   const fluxImageUrl = generatedImage.data[0].url;
 
   if (!fluxImageUrl) throw new Error("No image URL from Flux");
