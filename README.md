@@ -32,8 +32,8 @@
 
 ## Roadmap
 
-- [ ] Implement additional revision steps for improved summaries
-- [ ] Add demo PDF for new users
-- [ ] Implement section combining for better organization
-- [ ] Add feedback system with thumbs up/down feature
 - [ ] Integrate OCR for image parsing in PDFs
+- [ ] Add a bit more polish (make the link icon nicer)
+- [ ] Implement additional revision steps for improved summaries
+- [ ] Add a demo PDF for new users to be able to see it in action
+- [ ] Add feedback system with thumbs up/down feature
