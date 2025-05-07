@@ -32,6 +32,7 @@
 
 ## Roadmap
 
+- [ ] Add some rate limiting by IP address
 - [ ] Integrate OCR for image parsing in PDFs
 - [ ] Add a bit more polish (make the link icon nicer)
 - [ ] Implement additional revision steps for improved summaries
