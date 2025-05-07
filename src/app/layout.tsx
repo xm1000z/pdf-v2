@@ -6,6 +6,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import Link from "next/link";
+import PlausibleProvider from "next-plausible";
 
 const font = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -29,6 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
+      <head>
+        <PlausibleProvider domain="smartpdfs.ai" />
+      </head>
       <body
         className={`${font.variable} flex min-h-full flex-col bg-gray-100 font-[family-name:var(--font-plus-jakarta-sans)] text-gray-900 antialiased`}
       >
