@@ -9,10 +9,12 @@
 
 ## Tech stack
 
-- Together AI for LLM inference
-- Llama 3.3 for the LLM used
-- Next.js 15 with Tailwind CSS
-- Prisma ORM with Neon (PostgreSQL)
+- [Together AI](https://togetherai.link) for inference
+- [Llama 3.3](https://togetherai.link/llama-3.3) for the LLM
+- Next.js with Tailwind & TypeScript
+- Prisma ORM with Neon (Postgres)
+- Helicone for observability
+- Plausible for analytics
 - S3 for PDF storage
 
 ## Cloning & running
@@ -34,7 +36,7 @@
 
 - [ ] Add some rate limiting by IP address
 - [ ] Integrate OCR for image parsing in PDFs
-- [ ] Add a bit more polish (make the link icon nicer)
+- [ ] Add a bit more polish (make the link icon nicer) & add a "powered by Together" sign
 - [ ] Implement additional revision steps for improved summaries
 - [ ] Add a demo PDF for new users to be able to see it in action
 - [ ] Add feedback system with thumbs up/down feature
