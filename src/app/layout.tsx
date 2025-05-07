@@ -46,14 +46,14 @@ export default function RootLayout({
         <Toaster />
         <footer className="mx-auto mt-14 flex w-full max-w-7xl items-center justify-between px-4 py-6 md:mt-0">
           <p className="text-xs text-gray-300 md:text-sm">
-            Powered by{" "}
+            Powered by Llama 3.3 on{" "}
             <a
               target="_blank"
               rel="noopener noreferrer"
-              className="underline transition hover:text-gray-900"
+              className="text-gray-400 underline transition hover:text-gray-900"
               href="https://togetherai.link/"
             >
-              Llama 3.3 on Together AI
+              Together AI
             </a>
           </p>
 
