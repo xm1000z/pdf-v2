@@ -1,75 +1,37 @@
-![](./public/og.jpg)
+<a href="https://github.com/Nutlope/smartpdfs">
+  <img alt="SmartPDF" src="./public/og.jpg">
+  <h1 align="center">SmartPDF</h1>
+</a>
 
-# SmartPDF 📄✨
+<p align="center">
+  Instantly summarize and section your PDFs with AI. Powered by Llama 3.3 on Together AI.
+</p>
 
-SmartPDF is an intelligent PDF processing tool that automatically generates concise summaries of your PDF documents. It breaks down complex documents into digestible sections, making it easier to understand and share key information.
+## Tech stack
 
-## Features
+- Together AI for LLM inference
+- Llama 3.3 for the LLM used
+- Next.js 15 with Tailwind CSS
+- Prisma ORM with Neon (PostgreSQL)
+- S3 for PDF storage
 
-- 🚀 **Quick Summaries**: Get instant, AI-powered summaries of your PDF documents
-- 📑 **Smart Sectioning**: Automatically breaks down documents into logical sections
-- 🔗 **Easy Sharing**: Share summaries with others via quick links
-- 🖼️ **Cover image**: View a Flux rendering of a beautiful cover image of your PDF
+## Cloning & running
 
-## Tech Stack
-
-- **Frontend**: Next.js 15, React, TailwindCSS
-- **Backend**: Prisma with PostgreSQL (Neon)
-- **AI Processing**: Together AI
-- **Storage**: S3 for PDF storage
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 20.x
-- PNPM package manager
-- PostgreSQL database
-- Together AI API key
-
-### Installation
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-3. Set up environment variables:
-   ```env
-   DATABASE_URL=your_database_url
-   # Add other required environment variables
-   ```
-4. Generate Prisma client:
-   ```bash
-   pnpm prisma generate
-   ```
-5. Start the development server:
-   ```bash
-   pnpm dev
-   ```
-
-## Usage
-
-1. Upload your PDF document
-2. Wait for the AI to process and generate summaries
-3. Navigate through sections using the table of contents
-4. Share the summary with others using the share button
-5. Access the original PDF anytime via the "Original PDF" button
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-<div align="center">
-  <p>Made with ❤️ by <a href="https://github.com/Nutlope/smartpdfs">Hassan El Mghari</a></p>
-  <p>Powered by <a href="https://together.link/">Together AI</a></p>
-</div>
+1. Clone the repo: `git clone https://github.com/Nutlope/smartpdfs`
+2. Create a `.env` file and add your environment variables (see `.example.env`):
+   - `TOGETHER_API_KEY=`
+   - `DATABASE_URL=`
+   - `S3_UPLOAD_KEY=`
+   - `S3_UPLOAD_SECRET=`
+   - `S3_UPLOAD_BUCKET=`
+   - `S3_UPLOAD_REGION=us-east-1`
+   - `HELICONE_API_KEY=` (optional, for observability)
+3. Run `pnpm install` to install dependencies
+4. Run `pnpm prisma generate` to generate the Prisma client
+5. Run `pnpm dev` to start the development server
 
 ## Roadmap
 
-- [ ] Add plausible analytics for better insights
 - [ ] Implement additional revision steps for improved summaries
 - [ ] Add demo PDF for new users
 - [ ] Implement section combining for better organization

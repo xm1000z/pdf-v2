@@ -49,16 +49,7 @@ export default function RootLayout({
               className="underline transition hover:text-gray-900"
               href="https://togetherai.link/"
             >
-              Together AI
-            </a>{" "}
-            &{" "}
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline transition hover:text-gray-900"
-              href="https://www.together.ai/blog/flux-api-is-now-available-on-together-ai-new-pro-free-access-to-flux-schnell"
-            >
-              Flux
+              Llama 3.3 on Together AI
             </a>
           </p>
 
