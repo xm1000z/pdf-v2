@@ -15,11 +15,11 @@ const font = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Smart PDFs | Summarize PDFs in seconds",
+  title: "PDFs Inteligentes | Resume PDFs en segundos",
   description:
-    "Upload a PDF to get a quick, clear, and shareable summary with AI for free!",
+    "¡Sube un PDF para obtener un resumen rápido, claro y compartible con IA de forma gratuita!",
   openGraph: {
-    images: "https://smartpdfs.vercel.app/og.jpg",
+    images: "/og.jpg",
   },
 };
 
@@ -29,15 +29,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="es" className="h-full">
       <head>
-        <PlausibleProvider domain="smartpdfs.ai" />
+        <PlausibleProvider domain="notas.ai" />
       </head>
       <body
         className={`${font.variable} flex min-h-full flex-col bg-gray-100 font-[family-name:var(--font-plus-jakarta-sans)] text-gray-900 antialiased`}
       >
         <header className="py-6 text-center">
-          <Link href="/" className="inline-flex justify-center">
+          <Link href="https://notas.ai" className="inline-flex justify-center">
             <Logo />
           </Link>
         </header>
@@ -46,7 +46,7 @@ export default function RootLayout({
         <Toaster />
         <footer className="mx-auto mt-14 flex w-full max-w-7xl items-center justify-between px-4 py-6 md:mt-0">
           <p className="text-xs text-gray-300 md:text-sm">
-            Powered by Llama 3.3 on{" "}
+            Potenciado por NotasAI y Llama 3.3 en{" "}
             <a
               target="_blank"
               rel="noopener noreferrer"
@@ -56,27 +56,6 @@ export default function RootLayout({
               Together AI
             </a>
           </p>
-
-          <div className="flex items-center gap-2 md:gap-3">
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-lg border border-gray-250 bg-white px-2 py-1.5 text-xs text-gray-300 shadow transition hover:bg-white/75 md:rounded-xl md:px-4 md:text-sm"
-              href="https://github.com/nutlope/smartpdfs"
-            >
-              <GithubIcon className="size-4" />
-              GitHub
-            </a>
-            <a
-              href="https://x.com/nutlope"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-lg border border-gray-250 bg-white px-2 py-1.5 text-xs text-gray-300 shadow transition hover:bg-white/75 md:rounded-xl md:px-4 md:text-sm"
-            >
-              <XIcon className="size-3" />
-              Twitter
-            </a>
-          </div>
         </footer>
       </body>
     </html>

@@ -29,13 +29,13 @@ export const HomeLandingDrop = ({
   const { toast } = useToast();
   return (
     <div className="mx-auto mt-6 max-w-lg md:mt-10">
-      <h1 className="text-center text-4xl font-bold md:text-5xl">
-        Summarize PDFs
-        <br /> in seconds
+      <h1 className="text-center text-4xl font-bold md:text-5xl font-[InstrumentSerif]">
+        Resume PDFs
+        <br /> <span className="italic" >en segundos</span>
       </h1>
       <p className="mx-auto mt-6 max-w-md text-balance text-center leading-snug md:text-lg md:leading-snug">
-        Upload a <strong>PDF</strong> to get a quick, clear, and shareable
-        summary.
+        Suba un <strong>PDF</strong> para obtener un resumen rápido, claro y
+        compartible.
       </p>
 
       <form
@@ -52,7 +52,7 @@ export const HomeLandingDrop = ({
         <div className="relative">
           <div className="flex flex-col rounded-xl bg-white px-6 py-6 shadow md:px-12 md:py-8">
             <label className="text-gray-500" htmlFor="file">
-              Upload PDF
+              Subir PDF
             </label>
             <Dropzone
               multiple={false}
