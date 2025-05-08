@@ -43,7 +43,9 @@ export default function Home() {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const language = new FormData(e.currentTarget).get("language");
+    const formData = new FormData(e.currentTarget);
+    const language = formData.get("language");
+    const summary_length = formData.get("summary_length");
 
     if (!file || typeof language !== "string") return;
 
@@ -56,8 +58,8 @@ export default function Home() {
     if (pdf.numPages > 500) {
       toast({
         variant: "destructive",
-        title: "PDF too large (500 pages max)",
-        description: "That PDF has too many pages. Please use a smaller PDF.",
+        title: "PDF demasiado grande (máximo 500 páginas)",
+        description: "Este PDF tiene demasiadas páginas. Por favor, usa un PDF más pequeño.",
       });
       setStatus("idle");
       return;
@@ -72,9 +74,9 @@ export default function Home() {
     if (totalText < 500) {
       toast({
         variant: "destructive",
-        title: "Unable to process PDF",
+        title: "No se puede procesar el PDF",
         description:
-          "The PDF appears to be a scanned document or contains too little text to process. Please ensure the PDF contains searchable text.",
+          "El PDF parece ser un documento escaneado o contiene muy poco texto para procesar. Asegúrate de que el PDF contenga texto que se pueda buscar.",
       });
       setFile(undefined);
       setStatus("idle");
@@ -97,11 +99,11 @@ export default function Home() {
       },
     });
 
-    const stream = await summarizeStream(localChunks, language);
+    const stream = await summarizeStream(localChunks, language, summary_length ? Number(summary_length) : 3);
     const controller = new AbortController();
     await stream.pipeTo(writeStream, { signal: controller.signal });
 
-    const quickSummary = await generateQuickSummary(summarizedChunks, language);
+    const quickSummary = await generateQuickSummary(summarizedChunks, language, summary_length ? Number(summary_length) : 3);
     const imageUrl = await generateImage(quickSummary.summary);
 
     setQuickSummary(quickSummary);
@@ -157,7 +159,7 @@ export default function Home() {
                   <Link href={fileUrl} target="_blank">
                     <ActionButton>
                       <SquareArrowOutUpRight size={14} />
-                      <span>Original PDF</span>
+                      <span>PDF Original</span>
                     </ActionButton>
                   </Link>
                 )}
@@ -171,7 +173,7 @@ export default function Home() {
                 variant="ghost"
               >
                 <MenuIcon />
-                {showMobileContents ? "Hide" : "Show"} contents
+                {showMobileContents ? "Ocultar" : "Mostrar"} contenido
               </Button>
 
               {showMobileContents && (
@@ -201,7 +203,7 @@ export default function Home() {
                   />
                 ) : (
                   <div className="flex animate-pulse items-center justify-center py-4 text-lg md:py-8">
-                    Generating your Smart PDF&hellip;
+                    Generando tu PDF&hellip;
                   </div>
                 )}
               </div>

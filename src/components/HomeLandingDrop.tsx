@@ -14,6 +14,8 @@ import HomepageImage1 from "./images/homepage-image-1";
 import HomepageImage2 from "./images/homepage-image-2";
 import { StatusApp } from "@/app/page";
 import { useToast } from "@/hooks/use-toast";
+import { Slider } from "./ui/slider";
+import { useState } from "react";
 
 export const HomeLandingDrop = ({
   status,
@@ -27,14 +29,34 @@ export const HomeLandingDrop = ({
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }) => {
   const { toast } = useToast();
+  const [summaryLength, setSummaryLength] = useState<number[]>([3]);
+
+  // Función para convertir el valor del slider a texto descriptivo
+  const getLengthDescription = (value: number) => {
+    switch (value) {
+      case 1:
+        return "Muy breve";
+      case 2:
+        return "Breve";
+      case 3:
+        return "Normal";
+      case 4:
+        return "Detallado";
+      case 5:
+        return "Muy detallado";
+      default:
+        return "Normal";
+    }
+  };
+
   return (
     <div className="mx-auto mt-6 max-w-lg md:mt-10">
-      <h1 className="text-center text-4xl font-bold md:text-5xl font-[InstrumentSerif]">
-        Resume PDFs
+      <h1 className="text-center text-5xl font-bold md:text-5xl font-[InstrumentSerif]">
+        Resume tus PDFs
         <br /> <span className="italic" >en segundos</span>
       </h1>
       <p className="mx-auto mt-6 max-w-md text-balance text-center leading-snug md:text-lg md:leading-snug">
-        Suba un <strong>PDF</strong> para obtener un resumen rápido, claro y
+        Sube un <strong>PDF</strong> para obtener un resumen rápido, claro y
         compartible.
       </p>
 
@@ -64,8 +86,8 @@ export const HomeLandingDrop = ({
                 if (file.size > 15 * 1024 * 1024) {
                   // 10MB in bytes
                   toast({
-                    title: "📁 File Too Large",
-                    description: "⚠️ File size must be less than 15MB",
+                    title: "📁 Archivo demasiado grande",
+                    description: "⚠️ El tamaño del archivo debe ser menor a 15MB",
                   });
                   return;
                 }
@@ -83,7 +105,7 @@ export const HomeLandingDrop = ({
                       <p>{file.name}</p>
                     ) : (
                       <Button type="button" className="md:text-base">
-                        Select PDF
+                        Selecccionar PDF
                       </Button>
                     )}
                   </div>
@@ -91,22 +113,19 @@ export const HomeLandingDrop = ({
               )}
             </Dropzone>
             <label className="mt-8 text-gray-500" htmlFor="language">
-              Language
+              Idioma
             </label>
-            <Select defaultValue="english" name="language">
+            <Select defaultValue="spanish" name="language">
               <SelectTrigger className="mt-2 bg-gray-100" id="language">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {[
-                  { label: "English", value: "english" },
-                  { label: "German", value: "german" },
-                  { label: "French", value: "french" },
-                  { label: "Italian", value: "italian" },
-                  { label: "Portuguese", value: "portuguese" },
-                  { label: "Hindi", value: "hindi" },
-                  { label: "Spanish", value: "spanish" },
-                  { label: "Thai", value: "thai" },
+                  { label: "Español", value: "spanish" },
+                  { label: "Inglés", value: "english" },
+                  { label: "Catalán", value: "catalan" },
+                  { label: "Vasco", value: "basque" },
+                  { label: "Gallego", value: "galician" },
                 ].map((language) => (
                   <SelectItem key={language.value} value={language.value}>
                     {language.label}
@@ -114,6 +133,31 @@ export const HomeLandingDrop = ({
                 ))}
               </SelectContent>
             </Select>
+
+            <div className="mt-8">
+              <div className="flex justify-between">
+                <label className="text-gray-500" htmlFor="length">
+                  Longitud del resumen
+                </label>
+                <span className="text-sm text-gray-500">
+                  {getLengthDescription(summaryLength[0])}
+                </span>
+              </div>
+              <input type="hidden" name="summary_length" value={summaryLength[0]} />
+              <Slider
+                className="mt-2"
+                id="length"
+                min={1}
+                max={5}
+                step={1}
+                value={summaryLength}
+                onValueChange={setSummaryLength}
+              />
+              <div className="mt-1 flex justify-between text-xs text-gray-400">
+                <span>Corto</span>
+                <span>Largo</span>
+              </div>
+            </div>
           </div>
           <div className="mt-8 text-center">
             <Button
@@ -123,7 +167,7 @@ export const HomeLandingDrop = ({
               disabled={status === "parsing"}
             >
               <SparklesIcon />
-              Generate
+              Generar
             </Button>
           </div>
         </div>

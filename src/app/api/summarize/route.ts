@@ -7,45 +7,69 @@ import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { text, language } = await req.json();
+    const { text, language, summary_length = 3 } = await req.json();
 
     if (!text || !language) {
       return Response.json(
-        { error: "Missing required fields: text and language" },
+        { error: "Faltan campos requeridos: texto e idioma" },
         { status: 400 }
       );
     }
 
     assert.ok(typeof text === "string");
     assert.ok(typeof language === "string");
+    
+    // Determinar la longitud del resumen basado en el valor
+    let summaryLengthDescription;
+    switch (Number(summary_length)) {
+      case 1: 
+        summaryLengthDescription = "muy breve";
+        break;
+      case 2:
+        summaryLengthDescription = "breve";
+        break;
+      case 3:
+        summaryLengthDescription = "normal";
+        break;
+      case 4:
+        summaryLengthDescription = "detallado";
+        break;
+      case 5:
+        summaryLengthDescription = "muy detallado";
+        break;
+      default:
+        summaryLengthDescription = "normal";
+    }
 
     const systemPrompt = dedent`
-      You are an expert at summarizing text.
+      Eres un experto en resumir textos.
 
-      Your task:
-      1. Read the document excerpt I will provide
-      2. Create a concise summary in ${language}
-      3. Generate a short, descriptive title in ${language}
+      Tu tarea:
+      1. Lee el fragmento de documento que te proporcionaré
+      2. Crea un resumen conciso en ${language}
+      3. Genera un título corto y descriptivo en ${language}
+      
+      La longitud del resumen debe ser ${summaryLengthDescription}.
 
-      Guidelines for the summary:
-      - Format the summary in HTML
-      - Use <p> tags for paragraphs (2-3 sentences each)
-      - Use <ul> and <li> tags for bullet points
-      - Use <h3> tags for subheadings when needed but don't repeat the initial title in the first paragraph
-      - Ensure proper spacing with appropriate HTML tags
+      Pautas para el resumen:
+      - Formatea el resumen en HTML
+      - Usa etiquetas <p> para los párrafos (2-3 oraciones cada uno)
+      - Usa etiquetas <ul> y <li> para listas de viñetas
+      - Usa etiquetas <h3> para subtítulos cuando sea necesario, pero no repitas el título inicial en el primer párrafo
+      - Asegura un espaciado adecuado con las etiquetas HTML apropiadas
       
-      The summary should be well-structured and easy to scan, while maintaining accuracy and completeness.
-      Please analyze the text thoroughly before starting the summary.
+      El resumen debe estar bien estructurado y ser fácil de leer, manteniendo precisión e integridad.
+      Por favor, analiza el texto completamente antes de comenzar el resumen.
       
-      IMPORTANT: Output ONLY valid HTML without any markdown or plain text line breaks.
+      IMPORTANTE: Genera SOLO HTML válido sin markdown ni saltos de línea de texto plano.
     `;
 
     const summarySchema = z.object({
-      title: z.string().describe("A title for the summary"),
+      title: z.string().describe("Un título para el resumen"),
       summary: z
         .string()
         .describe(
-          "The actual summary of the text containing new lines breaks between paragraphs or phrases for better readability.",
+          "El resumen del texto que contiene saltos de línea entre párrafos o frases para una mejor legibilidad.",
         ),
     });
 
@@ -73,14 +97,14 @@ export async function POST(req: NextRequest) {
     console.log(summaryResponse.usage);
 
     if (!content) {
-      console.log("Content was blank");
-      return Response.json({ error: "Failed to generate summary" }, { status: 500 });
+      console.log("El contenido estaba vacío");
+      return Response.json({ error: "Error al generar el resumen" }, { status: 500 });
     }
 
     return Response.json(content);
   } catch (error) {
-    console.error("Summarization error:", error);
-    return Response.json({ error: "Failed to process request" }, { status: 500 });
+    console.error("Error de resumen:", error);
+    return Response.json({ error: "Error al procesar la solicitud" }, { status: 500 });
   }
 }
 
